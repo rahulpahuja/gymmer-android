@@ -1,6 +1,7 @@
 package com.m1x.gymmer.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -32,6 +33,7 @@ import com.m1x.gymmer.ui.theme.LimeGreen
 
 @Composable
 fun LoginScreen(
+    navController: androidx.navigation.NavController? = null,
     viewModel: LoginViewModel = viewModel(),
     onLoginSuccess: (UserRole) -> Unit = {}
 ) {
@@ -42,7 +44,8 @@ fun LoginScreen(
         onEmailChange = viewModel::onEmailChanged,
         onPasswordChange = viewModel::onPasswordChanged,
         onRoleChange = viewModel::onRoleChanged,
-        onLoginClick = { viewModel.login(onLoginSuccess) }
+        onLoginClick = { viewModel.login(onLoginSuccess) },
+        onTestClick = { navController?.navigate("test") }
     )
 }
 
@@ -52,7 +55,8 @@ fun LoginContent(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onRoleChange: (UserRole) -> Unit,
-    onLoginClick: () -> Unit
+    onLoginClick: () -> Unit,
+    onTestClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -71,7 +75,12 @@ fun LoginContent(
                 fontWeight = FontWeight.ExtraBold,
                 letterSpacing = 2.sp
             ),
-            color = Color.White
+            color = Color.White,
+            modifier = Modifier.clickable(
+                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                indication = null,
+                onClick = onTestClick
+            )
         )
         Text(
             text = "KINETIC VOLT",

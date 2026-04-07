@@ -93,6 +93,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.crashlytics)
 
     // Media3
     implementation(libs.androidx.media3.exoplayer)

@@ -31,6 +31,7 @@ sealed class Screen(val route: String) {
     object Nutrition : Screen("nutrition")
     object Community : Screen("community")
     object Chat : Screen("chat")
+    object Test : Screen("test")
     object ExerciseList : Screen("exercise_list/{category}") {
         fun createRoute(category: String) = "exercise_list/$category"
     }
@@ -97,6 +98,7 @@ fun GymNavHost(navController: NavHostController) {
             }
             composable(Screen.Login.route) {
                 LoginScreen(
+                    navController = navController,
                     onLoginSuccess = {
                         navController.navigate(Screen.Dashboard.route) {
                             popUpTo(Screen.Login.route) { inclusive = true }
@@ -148,6 +150,9 @@ fun GymNavHost(navController: NavHostController) {
             }
             composable(Screen.Chat.route) {
                 ChatScreen(navController = navController, onMenuClick = openDrawer)
+            }
+            composable(Screen.Test.route) {
+                TestScreen(onBackClick = { navController.popBackStack() })
             }
             composable(
                 route = Screen.ExerciseList.route,
