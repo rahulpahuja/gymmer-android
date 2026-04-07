@@ -44,11 +44,19 @@ fun VideoPlayerScreen(
     val finalUrl = videoUrl.ifEmpty { "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" }
     
     val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
-            setMediaItem(MediaItem.fromUri(finalUrl))
-            prepare()
-            playWhenReady = true
+        ExoPlayer.Builder(context).build()
+    }
+
+    androidx.compose.runtime.LaunchedEffect(finalUrl) {
+        val decodedUrl = try {
+            java.net.URLDecoder.decode(finalUrl, java.nio.charset.StandardCharsets.UTF_8.toString())
+        } catch (e: Exception) {
+            finalUrl
         }
+        
+        exoPlayer.setMediaItem(MediaItem.fromUri(decodedUrl))
+        exoPlayer.prepare()
+        exoPlayer.play()
     }
 
     DisposableEffect(Unit) {
