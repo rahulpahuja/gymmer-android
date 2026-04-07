@@ -23,5 +23,6 @@ data class LeaderboardState(
     val rank: Int,
     val userName: String,
     val points: Int,
+    val avatarUrl: String? = null,
     val isCurrentUser: Boolean = false
 )

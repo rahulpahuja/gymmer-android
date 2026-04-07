@@ -20,10 +20,17 @@ import com.m1x.gymmer.ui.components.GymCard
 import com.m1x.gymmer.ui.components.GymTopBar
 import com.m1x.gymmer.ui.navigation.Screen
 import com.m1x.gymmer.ui.theme.LimeGreen
+import coil.compose.AsyncImage
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
-data class ExerciseItem(val id: String, val title: String, val videoUrl: String, val duration: String)
+data class ExerciseItem(
+    val id: String,
+    val title: String,
+    val videoUrl: String,
+    val thumbnailUrl: String,
+    val duration: String
+)
 
 @Composable
 fun ExerciseListScreen(
@@ -32,18 +39,20 @@ fun ExerciseListScreen(
     onMenuClick: () -> Unit
 ) {
     val sampleVideos = listOf(
-        "https://storage.googleapis.com/exoplayer-test-media-0/BigBuckBunny_320x180.mp4",
-        "https://storage.googleapis.com/exoplayer-test-media-0/Jazz_Concert_720.mp4",
-        "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-        "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
+        "https://storage.googleapis.com/exoplayer-test-media-0/BigBuckBunny_320x180.mp4" to "https://storage.googleapis.com/exoplayer-test-media-0/BigBuckBunny_320x180.png",
+        "https://storage.googleapis.com/exoplayer-test-media-0/Jazz_Concert_720.mp4" to "https://storage.googleapis.com/exoplayer-test-media-0/Jazz_Concert_720.png",
+        "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" to "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg",
+        "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" to "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerEscapes.jpg",
+        "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4" to "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerFun.jpg"
     )
 
     val exercises = List(20) { index ->
+        val (videoUrl, thumbnailUrl) = sampleVideos[index % sampleVideos.size]
         ExerciseItem(
             id = index.toString(),
             title = "$category Exercise ${index + 1}",
-            videoUrl = sampleVideos[index % sampleVideos.size],
+            videoUrl = videoUrl,
+            thumbnailUrl = thumbnailUrl,
             duration = "${(2..5).random()} min"
         )
     }
@@ -89,7 +98,20 @@ fun ExerciseVideoCard(exercise: ExerciseItem, onClick: () -> Unit) {
                     .background(Color.DarkGray),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.PlayArrow, contentDescription = null, tint = LimeGreen)
+                AsyncImage(
+                    model = exercise.thumbnailUrl,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.3f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.PlayArrow, contentDescription = null, tint = LimeGreen)
+                }
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column {
