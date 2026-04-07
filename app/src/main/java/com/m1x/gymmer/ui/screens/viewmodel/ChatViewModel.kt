@@ -20,6 +20,15 @@ class ChatViewModel : ViewModel() {
     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
 
     fun sendMessage(text: String) {
-        // Implementation for sending message
+        val newMessage = MessageState(
+            id = (uiState.value.messages.maxOfOrNull { it.id } ?: 0) + 1,
+            content = text,
+            timestamp = "Just now",
+            isFromMe = true,
+            isRead = false
+        )
+        _uiState.value = _uiState.value.copy(
+            messages = _uiState.value.messages + newMessage
+        )
     }
 }

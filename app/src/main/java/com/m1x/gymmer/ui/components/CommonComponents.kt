@@ -11,7 +11,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -308,8 +308,7 @@ fun GymTopBar(
 @Composable
 fun GymBottomNavigation(selectedItem: Int, onItemSelected: (Int) -> Unit = {}) {
     NavigationBar(
-        containerColor = Color.Black.copy(alpha = 0.9f),
-        modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)
+        containerColor = Color.Black.copy(alpha = 0.9f)
     ) {
         val items = listOf("DASH", "TRAIN", "SCAN", "WALLET", "PROFILE")
         items.forEachIndexed { index, item ->
@@ -350,6 +349,34 @@ fun GymDrawerContent(
     onRouteSelected: (String) -> Unit,
     onLogout: () -> Unit
 ) {
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text("Logout", fontWeight = FontWeight.Bold) },
+            text = { Text("Are you sure you want to logout?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showLogoutDialog = false
+                        onLogout()
+                    }
+                ) {
+                    Text("LOGOUT", color = Color.Red)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutDialog = false }) {
+                    Text("CANCEL", color = Color.Gray)
+                }
+            },
+            containerColor = Color.DarkGray,
+            titleContentColor = Color.White,
+            textContentColor = Color.LightGray
+        )
+    }
+
     ModalDrawerSheet(
         drawerContainerColor = Color.Black,
         drawerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
@@ -402,7 +429,7 @@ fun GymDrawerContent(
         NavigationDrawerItem(
             label = { Text("Logout") },
             selected = false,
-            onClick = onLogout,
+            onClick = { showLogoutDialog = true },
             colors = NavigationDrawerItemDefaults.colors(
                 unselectedTextColor = Color.Red,
                 unselectedContainerColor = Color.Transparent

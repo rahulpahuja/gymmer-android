@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.m1x.gymmer.ui.navigation.Screen
+import com.m1x.gymmer.ui.components.GymBottomNavigation
 import com.m1x.gymmer.ui.components.GymBadge
 import com.m1x.gymmer.ui.components.GymCard
 import com.m1x.gymmer.ui.components.GymTopBar
@@ -41,6 +43,30 @@ fun CommunityFeedScreen(
 
     Scaffold(
         topBar = { GymTopBar(title = "COMMUNITY", onMenuClick = onMenuClick) },
+        bottomBar = {
+            GymBottomNavigation(
+                selectedItem = 4,
+                onItemSelected = { index ->
+                    val route = when (index) {
+                        0 -> Screen.Dashboard.route
+                        1 -> Screen.Workouts.route
+                        2 -> Screen.Scan.route
+                        3 -> Screen.Wallet.route
+                        4 -> Screen.Community.route
+                        else -> Screen.Dashboard.route
+                    }
+                    if (route != Screen.Community.route) {
+                        navController.navigate(route) {
+                            popUpTo(Screen.Dashboard.route) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                }
+            )
+        },
         containerColor = Color.Black
     ) { padding ->
         Column(

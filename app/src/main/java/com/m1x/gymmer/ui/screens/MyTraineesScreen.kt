@@ -47,6 +47,9 @@ fun MyTraineesScreen(
         uiState = uiState,
         onSearchQueryChange = viewModel::onSearchQueryChanged,
         onMenuClick = onMenuClick,
+        onViewProgress = { traineeName ->
+            navController.navigate(Screen.AttendanceLogs.route)
+        },
         onNavigateToScreen = { index ->
             val route = when (index) {
                 0 -> Screen.Dashboard.route
@@ -70,6 +73,7 @@ fun MyTraineesContent(
     uiState: MyTraineesUiState,
     onSearchQueryChange: (String) -> Unit,
     onMenuClick: () -> Unit = {},
+    onViewProgress: (String) -> Unit = {},
     onNavigateToScreen: (Int) -> Unit = {}
 ) {
     val scrollState = rememberLazyListState()
@@ -145,7 +149,8 @@ fun MyTraineesContent(
                     name = trainee.name,
                     plan = trainee.plan,
                     adherence = trainee.adherence,
-                    lastActivity = trainee.lastActivity
+                    lastActivity = trainee.lastActivity,
+                    onViewProgress = { onViewProgress(trainee.name) }
                 )
             }
             item {
@@ -187,7 +192,7 @@ fun NeedsAttentionCard(name: String, reason: String) {
 }
 
 @Composable
-fun ActiveRosterCard(name: String, plan: String, adherence: String, lastActivity: String) {
+fun ActiveRosterCard(name: String, plan: String, adherence: String, lastActivity: String, onViewProgress: () -> Unit = {}) {
     GymCard {
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
             AsyncImage(
@@ -227,7 +232,7 @@ fun ActiveRosterCard(name: String, plan: String, adherence: String, lastActivity
             }
             Spacer(modifier = Modifier.height(24.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                GymButton(text = "VIEW PROGRESS", onClick = {}, modifier = Modifier.weight(1f).height(48.dp))
+                GymButton(text = "VIEW PROGRESS", onClick = onViewProgress, modifier = Modifier.weight(1f).height(48.dp))
                 Spacer(modifier = Modifier.width(12.dp))
                 IconButton(
                     onClick = {},
