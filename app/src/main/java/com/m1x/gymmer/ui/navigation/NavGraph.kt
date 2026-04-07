@@ -14,6 +14,7 @@ import com.m1x.gymmer.ui.screens.state.UserRole
 import kotlinx.coroutines.launch
 
 sealed class Screen(val route: String) {
+    object Splash : Screen("splash")
     object Login : Screen("login")
     object Dashboard : Screen("dashboard")
     object Workouts : Screen("workouts")
@@ -83,8 +84,17 @@ fun GymNavHost(navController: NavHostController) {
     ) {
         NavHost(
             navController = navController,
-            startDestination = Screen.Login.route
+            startDestination = Screen.Splash.route
         ) {
+            composable(Screen.Splash.route) {
+                SplashScreen(
+                    onTimeout = {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Splash.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
             composable(Screen.Login.route) {
                 LoginScreen(
                     onLoginSuccess = {
