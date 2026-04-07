@@ -256,6 +256,7 @@ fun LoginScreenPreview() {
             uiState = LoginUiState(),
             onEmailChange = {},
             onPasswordChange = {},
+            onRoleChange = {},
             onLoginClick = {}
         )
     }
