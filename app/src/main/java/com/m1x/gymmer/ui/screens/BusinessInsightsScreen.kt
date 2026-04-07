@@ -291,8 +291,26 @@ fun RevenueKineticsSection(kineticsState: RevenueKineticsState) {
             }
         }
         Spacer(modifier = Modifier.height(24.dp))
-        // Chart placeholder
-        Box(modifier = Modifier.fillMaxWidth().height(150.dp).background(Color.DarkGray.copy(alpha = 0.3f)))
+        // Modern Bar Chart
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+                .background(Color.DarkGray.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.Bottom
+        ) {
+            kineticsState.chartData.forEach { value ->
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(value)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(if (value > 0.8f) LimeGreen else Color.Gray)
+                )
+            }
+        }
     }
 }
 

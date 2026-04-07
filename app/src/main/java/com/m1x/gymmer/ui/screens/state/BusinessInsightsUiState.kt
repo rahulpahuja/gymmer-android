@@ -38,5 +38,6 @@ data class ManagementTask(
 
 data class RevenueKineticsState(
     val selectedPeriod: String = "MONTHLY",
-    val periods: List<String> = listOf("DAILY", "MONTHLY", "QUARTERLY")
+    val periods: List<String> = listOf("DAILY", "MONTHLY", "QUARTERLY"),
+    val chartData: List<Float> = listOf(0.4f, 0.6f, 0.5f, 0.8f, 0.7f, 0.9f, 0.75f, 0.85f, 0.95f, 0.8f, 0.9f, 1.0f)
 )
