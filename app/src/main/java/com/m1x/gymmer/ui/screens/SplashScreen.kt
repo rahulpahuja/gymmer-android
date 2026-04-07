@@ -37,8 +37,9 @@ fun SplashScreen(onTimeout: () -> Unit) {
     )
 
     LaunchedEffect(key1 = true) {
+        delay(100) // Small delay to ensure initial state is rendered
         startAnimation = true
-        delay(2000)
+        delay(2500) // Increased slightly to allow full animation to finish
         onTimeout()
     }
 
