@@ -10,6 +10,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.m1x.gymmer.ui.components.GymDrawerContent
 import com.m1x.gymmer.ui.screens.*
+import com.m1x.gymmer.ui.screens.state.UserRole
 import kotlinx.coroutines.launch
 
 sealed class Screen(val route: String) {

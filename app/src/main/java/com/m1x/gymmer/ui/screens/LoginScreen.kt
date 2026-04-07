@@ -25,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.m1x.gymmer.R
 import com.m1x.gymmer.ui.components.*
 import com.m1x.gymmer.ui.screens.state.LoginUiState
+import com.m1x.gymmer.ui.screens.state.UserRole
 import com.m1x.gymmer.ui.screens.viewmodel.LoginViewModel
 import com.m1x.gymmer.ui.theme.GymmerTheme
 import com.m1x.gymmer.ui.theme.LimeGreen
@@ -32,7 +33,7 @@ import com.m1x.gymmer.ui.theme.LimeGreen
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
-    onLoginSuccess: () -> Unit = {}
+    onLoginSuccess: (UserRole) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -40,6 +41,7 @@ fun LoginScreen(
         uiState = uiState,
         onEmailChange = viewModel::onEmailChanged,
         onPasswordChange = viewModel::onPasswordChanged,
+        onRoleChange = viewModel::onRoleChanged,
         onLoginClick = { viewModel.login(onLoginSuccess) }
     )
 }
@@ -49,6 +51,7 @@ fun LoginContent(
     uiState: LoginUiState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
+    onRoleChange: (UserRole) -> Unit,
     onLoginClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -77,10 +80,36 @@ fun LoginContent(
             letterSpacing = 4.sp
         )
 
-        Spacer(modifier = Modifier.height(64.dp))
+        Spacer(modifier = Modifier.height(48.dp))
+
+        SecondaryTabRow(
+            selectedTabIndex = if (uiState.selectedRole == UserRole.TRAINEE) 0 else 1,
+            containerColor = Color.Black,
+            contentColor = LimeGreen,
+            divider = {},
+            indicator = {
+                TabRowDefaults.SecondaryIndicator(
+                    modifier = Modifier.tabIndicatorOffset(if (uiState.selectedRole == UserRole.TRAINEE) 0 else 1),
+                    color = LimeGreen
+                )
+            }
+        ) {
+            Tab(
+                selected = uiState.selectedRole == UserRole.TRAINEE,
+                onClick = { onRoleChange(UserRole.TRAINEE) },
+                text = { Text("TRAINEE", style = MaterialTheme.typography.labelLarge) }
+            )
+            Tab(
+                selected = uiState.selectedRole == UserRole.TRAINER,
+                onClick = { onRoleChange(UserRole.TRAINER) },
+                text = { Text("TRAINER", style = MaterialTheme.typography.labelLarge) }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = stringResource(R.string.login_trainee_title),
+            text = if (uiState.selectedRole == UserRole.TRAINEE) stringResource(R.string.login_trainee_title) else "Trainer Login",
             style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Black),
             color = Color.White,
             modifier = Modifier.fillMaxWidth()
