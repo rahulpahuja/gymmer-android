@@ -8,10 +8,16 @@ data class ChatUiState(
     val isSending: Boolean = false
 )
 
+enum class MessageType {
+    TEXT, VOICE
+}
+
 data class MessageState(
     val id: Long,
     val content: String,
     val timestamp: String,
     val isFromMe: Boolean,
-    val isRead: Boolean
+    val isRead: Boolean,
+    val type: MessageType = MessageType.TEXT,
+    val duration: String? = null
 )

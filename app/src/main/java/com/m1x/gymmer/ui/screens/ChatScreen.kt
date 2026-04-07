@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.m1x.gymmer.ui.components.GymTopBar
 import com.m1x.gymmer.ui.screens.state.MessageState
+import com.m1x.gymmer.ui.screens.state.MessageType
 import com.m1x.gymmer.ui.screens.viewmodel.ChatViewModel
 import com.m1x.gymmer.ui.theme.LimeGreen
 
@@ -44,6 +47,9 @@ fun ChatScreen(
                         viewModel.sendMessage(messageText)
                         messageText = ""
                     }
+                },
+                onVoiceNote = {
+                    viewModel.sendVoiceNote("0:10")
                 }
             )
         },
@@ -85,7 +91,11 @@ fun MessageBubble(message: MessageState) {
             )
         ) {
             Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
-                Text(text = message.content, color = textColor, style = MaterialTheme.typography.bodyLarge)
+                if (message.type == MessageType.VOICE) {
+                    VoiceNoteContent(message, textColor)
+                } else {
+                    Text(text = message.content, color = textColor, style = MaterialTheme.typography.bodyLarge)
+                }
                 Text(
                     text = message.timestamp,
                     color = if (message.isFromMe) Color.Black.copy(alpha = 0.6f) else Color.Gray,
@@ -98,10 +108,40 @@ fun MessageBubble(message: MessageState) {
 }
 
 @Composable
+fun VoiceNoteContent(message: MessageState, textColor: Color) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(vertical = 4.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.PlayArrow,
+            contentDescription = "Play Voice Note",
+            tint = textColor,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        // Simple representation of a waveform
+        Box(
+            modifier = Modifier
+                .width(100.dp)
+                .height(2.dp)
+                .background(textColor.copy(alpha = 0.5f))
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = message.duration ?: "0:00",
+            color = textColor,
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
+}
+
+@Composable
 fun ChatInput(
     value: String,
     onValueChange: (String) -> Unit,
-    onSend: () -> Unit
+    onSend: () -> Unit,
+    onVoiceNote: () -> Unit
 ) {
     Surface(
         color = Color.Black,
@@ -132,14 +172,26 @@ fun ChatInput(
                 maxLines = 4
             )
             Spacer(modifier = Modifier.width(8.dp))
-            IconButton(
-                onClick = onSend,
-                modifier = Modifier
-                    .size(48.dp)
-                    .background(LimeGreen, RoundedCornerShape(24.dp))
-            ) {
-                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", tint = Color.Black)
+            if (value.isBlank()) {
+                IconButton(
+                    onClick = onVoiceNote,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(LimeGreen, RoundedCornerShape(24.dp))
+                ) {
+                    Icon(Icons.Default.Mic, contentDescription = "Voice Note", tint = Color.Black)
+                }
+            } else {
+                IconButton(
+                    onClick = onSend,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(LimeGreen, RoundedCornerShape(24.dp))
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", tint = Color.Black)
+                }
             }
         }
     }
 }
+

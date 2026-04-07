@@ -62,6 +62,9 @@ fun DashboardScreen(
         },
         onExerciseClick = { category ->
             navController.navigate(Screen.ExerciseList.createRoute(category))
+        },
+        onViewAllSessionsClick = {
+            navController.navigate(Screen.Workouts.route)
         }
     )
 }
@@ -72,7 +75,8 @@ fun DashboardContent(
     onCheckInClick: () -> Unit,
     onMenuClick: () -> Unit = {},
     onNavigateToScreen: (Int) -> Unit = {},
-    onExerciseClick: (String) -> Unit = {}
+    onExerciseClick: (String) -> Unit = {},
+    onViewAllSessionsClick: () -> Unit = {}
 ) {
     Scaffold(
         topBar = { GymTopBar(title = stringResource(R.string.dashboard_title), onMenuClick = onMenuClick) },
@@ -116,7 +120,8 @@ fun DashboardContent(
             item {
                 ActiveSessionsSection(
                     sessions = uiState.activeSessions,
-                    onSessionClick = { onExerciseClick(it) }
+                    onSessionClick = { onExerciseClick(it) },
+                    onViewAllClick = onViewAllSessionsClick
                 )
             }
             item {
@@ -245,7 +250,11 @@ fun ExerciseListItem(name: String) {
 }
 
 @Composable
-fun ActiveSessionsSection(sessions: List<ActiveSession>, onSessionClick: (String) -> Unit = {}) {
+fun ActiveSessionsSection(
+    sessions: List<ActiveSession>,
+    onSessionClick: (String) -> Unit = {},
+    onViewAllClick: () -> Unit = {}
+) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -253,7 +262,12 @@ fun ActiveSessionsSection(sessions: List<ActiveSession>, onSessionClick: (String
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(stringResource(R.string.active_sessions), style = MaterialTheme.typography.titleLarge, color = Color.White)
-            Text(stringResource(R.string.view_all), style = MaterialTheme.typography.labelMedium, color = LimeGreen)
+            Text(
+                text = stringResource(R.string.view_all),
+                style = MaterialTheme.typography.labelMedium,
+                color = LimeGreen,
+                modifier = Modifier.clickable(onClick = onViewAllClick)
+            )
         }
         Spacer(modifier = Modifier.height(16.dp))
         sessions.forEach { session ->
