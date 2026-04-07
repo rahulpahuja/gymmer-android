@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">gymmer</string>
+    <string name="dashboard_title">KINETIC</string>
+    <string name="status_report">STATUS REPORT</string>
+    <string name="check_in_required">Check-in\nrequired</string>
+    <string name="checked_in">Checked\nin</string>
+    <string name="last_activity">Last activity: %1$s</string>
+    <string name="pro_badge">PRO</string>
+    <string name="expires_in_days">EXPIRES IN %1$d DAYS</string>
+    <string name="todays_target">TODAY\'S TARGET</string>
+    <string name="active_sessions">Active Sessions</string>
+    <string name="view_all">View All</string>
+
+    <!-- Login -->
+    <string name="login_trainee_title">TRAINEE LOGIN</string>
+    <string name="login_subtitle">Ready for your next session?</string>
+    <string name="login_email_label">Phone or Email</string>
+    <string name="login_email_placeholder">trainee@kinetic.com</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_password_placeholder">********</string>
+    <string name="login_forgot">FORGOT?</string>
+    <string name="login_initiate">Initiate Session</string>
+    <string name="login_processing">Processing...</string>
+    <string name="login_biometric">Biometric Quick-Auth</string>
+    <string name="login_social_auth">SOCIAL AUTH</string>
+    <string name="login_new_user">New to the core? </string>
+    <string name="login_apply_onboarding">Apply for Onboarding</string>
+
+    <!-- Scan -->
+    <string name="scan_instruction">POINT AT GYM ENTRY QR OR MACHINE QR</string>
+    <string name="scan_recent_activity">RECENT ACTIVITY</string>
+
+    <!-- Security -->
+    <string name="security_alert">Security Alert</string>
+    <string name="root_detected_message">This device appears to be rooted. For security reasons, Gymmer cannot run on rooted devices.</string>
+</resources>
