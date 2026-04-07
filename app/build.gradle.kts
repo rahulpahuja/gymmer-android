@@ -88,6 +88,7 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose)
+    implementation(libs.androidx.core.splashscreen.v120)
 
     // Firebase
     implementation(platform(libs.firebase.bom))
