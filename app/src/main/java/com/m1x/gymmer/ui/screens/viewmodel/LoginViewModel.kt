@@ -4,10 +4,10 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.m1x.gymmer.GymmerApplication
+import com.m1x.gymmer.data.network.models.LoginRequest
 import com.m1x.gymmer.data.utils.LogManager
 import com.m1x.gymmer.ui.screens.state.LoginUiState
 import com.m1x.gymmer.ui.screens.state.UserRole
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +16,8 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private val gymmerApp = application as GymmerApplication
-    private val logManager = LogManager.getInstance(application, gymmerApp.coroutineManager)
+    private val logManager = gymmerApp.logManager
+    private val repository = gymmerApp.repository
     
     private val _uiState = MutableStateFlow(
         LoginUiState(
@@ -63,9 +64,15 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            delay(1000)
-            _uiState.update { it.copy(isLoading = false) }
-            onSuccess(currentState.selectedRole)
+            try {
+                val user = repository.login(LoginRequest(currentState.email, currentState.password))
+                logManager.info(LogManager.LogCategory.LOGIN, "Login successful for ${user.email}")
+                _uiState.update { it.copy(isLoading = false) }
+                onSuccess(currentState.selectedRole)
+            } catch (e: Exception) {
+                logManager.info(LogManager.LogCategory.ERRORS, "Login failed: ${e.message}")
+                _uiState.update { it.copy(isLoading = false, error = "Login failed: ${e.message}") }
+            }
         }
     }
 }

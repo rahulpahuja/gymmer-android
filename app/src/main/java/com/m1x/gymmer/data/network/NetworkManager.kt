@@ -19,7 +19,7 @@ class NetworkManager(private val logManager: LogManager) {
         .build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://api.gymmer.com/v1/") // Placeholder BASE_URL
+        .baseUrl("http://10.0.2.2:8080/") // Pointing to local backend via emulator proxy
         .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()

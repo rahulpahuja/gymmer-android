@@ -17,6 +17,9 @@ class GymmerApplication : Application() {
     lateinit var networkManager: NetworkManager
         private set
 
+    lateinit var repository: com.m1x.gymmer.data.repository.GymmerRepository
+        private set
+
     var isDeviceRooted: Boolean = false
         private set
 
@@ -29,6 +32,7 @@ class GymmerApplication : Application() {
         coroutineManager = CoroutineManager()
         logManager = LogManager.getInstance(this, coroutineManager)
         networkManager = NetworkManager(logManager)
+        repository = com.m1x.gymmer.data.repository.GymmerRepository(networkManager.apiService)
 
         logManager.info(LogManager.LogCategory.SYSTEM, "Application Started. Rooted: $isDeviceRooted")
     }
