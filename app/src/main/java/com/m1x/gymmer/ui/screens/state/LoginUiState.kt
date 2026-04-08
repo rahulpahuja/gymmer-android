@@ -1,7 +1,7 @@
 package com.m1x.gymmer.ui.screens.state
 
 enum class UserRole {
-    TRAINEE, TRAINER, BUSINESS
+    TRAINEE, TRAINER, BUSINESS, SUPER_USER
 }
 
 data class LoginUiState(

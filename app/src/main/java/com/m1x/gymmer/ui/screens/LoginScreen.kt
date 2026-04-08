@@ -93,43 +93,47 @@ fun LoginContent(
         Spacer(modifier = Modifier.height(48.dp))
 
         TabRow(
-            selectedTabIndex = if (uiState.selectedRole == UserRole.TRAINEE) 0 else if (uiState.selectedRole == UserRole.TRAINER) 1 else 2,
+            selectedTabIndex = when (uiState.selectedRole) {
+                UserRole.TRAINEE -> 0
+                UserRole.TRAINER -> 1
+                UserRole.BUSINESS -> 2
+                UserRole.SUPER_USER -> 3
+            },
             containerColor = Color.Black,
             contentColor = LimeGreen,
             divider = {},
             indicator = { tabPositions ->
-                if (uiState.selectedRole == UserRole.TRAINEE) {
-                    TabRowDefaults.SecondaryIndicator(
-                        modifier = Modifier.tabIndicatorOffset(tabPositions[0]),
-                        color = LimeGreen
-                    )
-                } else if (uiState.selectedRole == UserRole.TRAINER) {
-                    TabRowDefaults.SecondaryIndicator(
-                        modifier = Modifier.tabIndicatorOffset(tabPositions[1]),
-                        color = LimeGreen
-                    )
-                } else {
-                    TabRowDefaults.SecondaryIndicator(
-                        modifier = Modifier.tabIndicatorOffset(tabPositions[2]),
-                        color = LimeGreen
-                    )
+                val index = when (uiState.selectedRole) {
+                    UserRole.TRAINEE -> 0
+                    UserRole.TRAINER -> 1
+                    UserRole.BUSINESS -> 2
+                    UserRole.SUPER_USER -> 3
                 }
+                TabRowDefaults.SecondaryIndicator(
+                    modifier = Modifier.tabIndicatorOffset(tabPositions[index]),
+                    color = LimeGreen
+                )
             }
         ) {
             Tab(
                 selected = uiState.selectedRole == UserRole.TRAINEE,
                 onClick = { onRoleChange(UserRole.TRAINEE) },
-                text = { Text("TRAINEE", style = MaterialTheme.typography.labelLarge) }
+                text = { Text("TRAINEE", style = MaterialTheme.typography.labelSmall) }
             )
             Tab(
                 selected = uiState.selectedRole == UserRole.TRAINER,
                 onClick = { onRoleChange(UserRole.TRAINER) },
-                text = { Text("TRAINER", style = MaterialTheme.typography.labelLarge) }
+                text = { Text("TRAINER", style = MaterialTheme.typography.labelSmall) }
             )
             Tab(
                 selected = uiState.selectedRole == UserRole.BUSINESS,
                 onClick = { onRoleChange(UserRole.BUSINESS) },
-                text = { Text("BUSINESS", style = MaterialTheme.typography.labelLarge) }
+                text = { Text("BUSINESS", style = MaterialTheme.typography.labelSmall) }
+            )
+            Tab(
+                selected = uiState.selectedRole == UserRole.SUPER_USER,
+                onClick = { onRoleChange(UserRole.SUPER_USER) },
+                text = { Text("SUPER", style = MaterialTheme.typography.labelSmall) }
             )
         }
 

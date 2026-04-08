@@ -59,6 +59,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 val finalRole = when(user.role?.uppercase()) {
                     "TRAINER" -> UserRole.TRAINER
                     "BUSINESS" -> UserRole.BUSINESS
+                    "SUPER_USER" -> UserRole.SUPER_USER
                     else -> UserRole.TRAINEE
                 }
                 onSuccess(finalRole)

@@ -99,8 +99,14 @@ fun GymNavHost(navController: NavHostController) {
             composable(Screen.Login.route) {
                 LoginScreen(
                     navController = navController,
-                    onLoginSuccess = {
-                        navController.navigate(Screen.Dashboard.route) {
+                    onLoginSuccess = { role ->
+                        val destination = when (role) {
+                            UserRole.TRAINEE -> Screen.Dashboard.route
+                            UserRole.TRAINER -> Screen.TrainerStudio.route
+                            UserRole.BUSINESS -> Screen.BusinessInsights.route
+                            UserRole.SUPER_USER -> Screen.Dashboard.route // For now, direct to Dashboard or a new Super Dashboard
+                        }
+                        navController.navigate(destination) {
                             popUpTo(Screen.Login.route) { inclusive = true }
                         }
                     }
