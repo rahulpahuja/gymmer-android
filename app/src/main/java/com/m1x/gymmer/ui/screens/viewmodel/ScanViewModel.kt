@@ -34,7 +34,7 @@ class ScanViewModel(application: Application) : AndroidViewModel(application) {
                 val userId = UUID.fromString(qrContent)
                 val checkIn = repository.checkIn(userId)
                 
-                logManager.info(LogManager.LogCategory.SUCCESS, "Check-in successful for user: $userId at ${checkIn.checkedInAt}")
+                logManager.info(LogManager.LogCategory.SCAN, "Check-in successful for user: $userId at ${checkIn.checkedInAt}")
                 
                 _uiState.update { 
                     it.copy(

@@ -33,9 +33,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun onRoleChanged(role: UserRole) {
-        val defaultEmail = if (role == UserRole.TRAINEE) "trainee@gymmer.com" else "trainer@gymmer.com"
-        val defaultPassword = if (role == UserRole.TRAINEE) "password123" else "trainer456"
-        _uiState.update { it.copy(selectedRole = role, email = defaultEmail, password = defaultPassword, error = null) }
+        _uiState.update { it.copy(selectedRole = role, error = null) }
     }
 
     fun onPasswordChanged(password: String) {
@@ -50,25 +48,20 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
 
-        // Validate credentials based on role
-        val isValid = if (currentState.selectedRole == UserRole.TRAINEE) {
-            currentState.email == "trainee@gymmer.com" && currentState.password == "password123"
-        } else {
-            currentState.email == "trainer@gymmer.com" && currentState.password == "trainer456"
-        }
-
-        if (!isValid) {
-            _uiState.update { it.copy(error = "Invalid ${currentState.selectedRole.name.lowercase()} credentials") }
-            return
-        }
-
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             try {
                 val user = repository.login(LoginRequest(currentState.email, currentState.password))
                 logManager.info(LogManager.LogCategory.LOGIN, "Login successful for ${user.email}")
+                
                 _uiState.update { it.copy(isLoading = false) }
-                onSuccess(currentState.selectedRole)
+                
+                val finalRole = when(user.role?.uppercase()) {
+                    "TRAINER" -> UserRole.TRAINER
+                    "BUSINESS" -> UserRole.BUSINESS
+                    else -> UserRole.TRAINEE
+                }
+                onSuccess(finalRole)
             } catch (e: Exception) {
                 logManager.info(LogManager.LogCategory.ERRORS, "Login failed: ${e.message}")
                 _uiState.update { it.copy(isLoading = false, error = "Login failed: ${e.message}") }

@@ -1,13 +1,13 @@
 package com.m1x.gymmer.ui.screens.state
 
 enum class UserRole {
-    TRAINEE, TRAINER
+    TRAINEE, TRAINER, BUSINESS
 }
 
 data class LoginUiState(
     val email: String = "",
     val password: String = "",
-    val selectedRole: UserRole = UserRole.TRAINEE,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val selectedRole: UserRole = UserRole.TRAINEE
 )

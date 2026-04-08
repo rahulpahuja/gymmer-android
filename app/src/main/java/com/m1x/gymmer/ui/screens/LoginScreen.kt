@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,16 +92,28 @@ fun LoginContent(
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        SecondaryTabRow(
-            selectedTabIndex = if (uiState.selectedRole == UserRole.TRAINEE) 0 else 1,
+        TabRow(
+            selectedTabIndex = if (uiState.selectedRole == UserRole.TRAINEE) 0 else if (uiState.selectedRole == UserRole.TRAINER) 1 else 2,
             containerColor = Color.Black,
             contentColor = LimeGreen,
             divider = {},
-            indicator = {
-                TabRowDefaults.SecondaryIndicator(
-                    modifier = Modifier.tabIndicatorOffset(if (uiState.selectedRole == UserRole.TRAINEE) 0 else 1),
-                    color = LimeGreen
-                )
+            indicator = { tabPositions ->
+                if (uiState.selectedRole == UserRole.TRAINEE) {
+                    TabRowDefaults.SecondaryIndicator(
+                        modifier = Modifier.tabIndicatorOffset(tabPositions[0]),
+                        color = LimeGreen
+                    )
+                } else if (uiState.selectedRole == UserRole.TRAINER) {
+                    TabRowDefaults.SecondaryIndicator(
+                        modifier = Modifier.tabIndicatorOffset(tabPositions[1]),
+                        color = LimeGreen
+                    )
+                } else {
+                    TabRowDefaults.SecondaryIndicator(
+                        modifier = Modifier.tabIndicatorOffset(tabPositions[2]),
+                        color = LimeGreen
+                    )
+                }
             }
         ) {
             Tab(
@@ -113,12 +126,21 @@ fun LoginContent(
                 onClick = { onRoleChange(UserRole.TRAINER) },
                 text = { Text("TRAINER", style = MaterialTheme.typography.labelLarge) }
             )
+            Tab(
+                selected = uiState.selectedRole == UserRole.BUSINESS,
+                onClick = { onRoleChange(UserRole.BUSINESS) },
+                text = { Text("BUSINESS", style = MaterialTheme.typography.labelLarge) }
+            )
         }
 
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = if (uiState.selectedRole == UserRole.TRAINEE) stringResource(R.string.login_trainee_title) else "Trainer Login",
+            text = when (uiState.selectedRole) {
+                UserRole.TRAINEE -> stringResource(R.string.login_trainee_title)
+                UserRole.TRAINER -> "Trainer Login"
+                UserRole.BUSINESS -> "Business Login"
+            },
             style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Black),
             color = Color.White,
             modifier = Modifier.fillMaxWidth()

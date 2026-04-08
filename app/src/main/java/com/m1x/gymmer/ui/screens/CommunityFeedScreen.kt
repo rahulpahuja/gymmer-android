@@ -74,13 +74,13 @@ fun CommunityFeedScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            SecondaryTabRow(
+            TabRow(
                 selectedTabIndex = uiState.selectedTab,
                 containerColor = Color.Black,
                 contentColor = LimeGreen,
-                indicator = {
+                indicator = { tabPositions ->
                     TabRowDefaults.SecondaryIndicator(
-                        modifier = Modifier.tabIndicatorOffset(uiState.selectedTab),
+                        modifier = Modifier.tabIndicatorOffset(tabPositions[uiState.selectedTab]),
                         color = LimeGreen
                     )
                 }
