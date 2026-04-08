@@ -1,9 +1,7 @@
 package com.m1x.gymmer.ui.screens.viewmodel
 
 import com.m1x.gymmer.GymmerApplication
-import com.m1x.gymmer.data.network.models.Exercise
-import com.m1x.gymmer.data.network.models.TrainerDashboardData
-import com.m1x.gymmer.data.network.models.User
+import com.m1x.gymmer.data.network.models.*
 import com.m1x.gymmer.data.repository.GymmerRepository
 import com.m1x.gymmer.data.utils.LogManager
 import io.mockk.coEvery
@@ -21,16 +19,15 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import java.util.UUID
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class TrainerStudioViewModelTest {
+class BusinessInsightsViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var application: GymmerApplication
     private lateinit var repository: GymmerRepository
     private lateinit var logManager: LogManager
-    private lateinit var viewModel: TrainerStudioViewModel
+    private lateinit var viewModel: BusinessInsightsViewModel
 
     @Before
     fun setup() {
@@ -46,13 +43,18 @@ class TrainerStudioViewModelTest {
         every { application.repository } returns repository
         every { application.logManager } returns logManager
 
-        // Default mock responses
-        coEvery { repository.listExercises() } returns listOf(
-            Exercise(id = UUID.randomUUID(), name = "Bench Press")
+        // Mock responses
+        coEvery { repository.getRevenueKinetics() } returns listOf(
+            RevenueDataPoint("Jan", 1000.0),
+            RevenueDataPoint("Feb", 1200.0)
         )
-        coEvery { repository.getTrainerDashboard(any()) } returns TrainerDashboardData(
-            trainer = User(name = "Test Trainer"),
-            activeTraineeCount = 5
+        coEvery { repository.getPulse() } returns listOf(
+            GymPulse(gymName = "Gym A", currentCapacity = 75)
+        )
+        coEvery { repository.getBusinessInsights() } returns BusinessInsights(
+            annualRevenue = 50000.0,
+            retentionRate = 85.0,
+            memberGrowth = 200
         )
     }
 
@@ -62,15 +64,27 @@ class TrainerStudioViewModelTest {
     }
 
     @Test
-    fun `loadStudioData updates uiState with repository data`() = runTest {
-        viewModel = TrainerStudioViewModel(application)
+    fun `loadData updates uiState with repository data`() = runTest {
+        viewModel = BusinessInsightsViewModel(application)
         
         advanceUntilIdle()
         
         val state = viewModel.uiState.value
-        assertEquals(1, state.machineLibrary.size)
-        assertEquals("Bench Press", state.machineLibrary[0].name)
-        assertEquals(1, state.recentUploads.size)
-        assertEquals("Active Trainees: 5", state.recentUploads[0].machineName)
+        assertEquals("₹50000.0", state.annualRevenue.amount)
+        assertEquals("85.0%", state.retention.percentage)
+        assertEquals("200", state.growth.activeTotal)
+        assertEquals(2, state.revenueKinetics.chartData.size)
+        assertEquals(1, state.gymPulse.size)
+        assertEquals("Gym A", state.gymPulse[0].name)
+    }
+
+    @Test
+    fun `onPeriodSelected updates selectedPeriod`() = runTest {
+        viewModel = BusinessInsightsViewModel(application)
+        advanceUntilIdle()
+        
+        viewModel.onPeriodSelected("Monthly")
+        
+        assertEquals("Monthly", viewModel.uiState.value.revenueKinetics.selectedPeriod)
     }
 }
