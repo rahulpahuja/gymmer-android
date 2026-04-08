@@ -20,13 +20,15 @@ import com.m1x.gymmer.data.database.entity.*
         MessageEntity::class,
         FeedbackEntity::class,
         GymClassEntity::class,
-        ClassBookingEntity::class
+        ClassBookingEntity::class,
+        TrainerEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun traineeDao(): TraineeDao
+    abstract fun trainerDao(): TrainerDao
     abstract fun workoutDao(): WorkoutDao
     abstract fun nutritionDao(): NutritionDao
     abstract fun socialDao(): SocialDao
