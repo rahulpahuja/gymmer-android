@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -52,6 +53,7 @@ fun DashboardScreen(
                 2 -> Screen.Scan.route
                 3 -> Screen.Wallet.route
                 4 -> Screen.Profile.route
+                5 -> Screen.Chat.route
                 else -> Screen.Dashboard.route
             }
             navController.navigate(route) {
@@ -85,6 +87,16 @@ fun DashboardContent(
                 selectedItem = 0,
                 onItemSelected = onNavigateToScreen
             ) 
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { onNavigateToScreen(5) }, // 5 for Chat
+                containerColor = LimeGreen,
+                contentColor = Color.Black,
+                shape = CircleShape
+            ) {
+                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Chat with Trainer")
+            }
         },
         containerColor = Color.Black
     ) { padding ->

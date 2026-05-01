@@ -50,6 +50,9 @@ fun MyTraineesScreen(
         onViewProgress = { traineeName ->
             navController.navigate(Screen.AttendanceLogs.route)
         },
+        onMessageClick = { traineeId ->
+            navController.navigate(Screen.Chat.createRoute(traineeId ?: ""))
+        },
         onNavigateToScreen = { index ->
             val route = when (index) {
                 0 -> Screen.Dashboard.route
@@ -74,6 +77,7 @@ fun MyTraineesContent(
     onSearchQueryChange: (String) -> Unit,
     onMenuClick: () -> Unit = {},
     onViewProgress: (String) -> Unit = {},
+    onMessageClick: (String?) -> Unit = {},
     onNavigateToScreen: (Int) -> Unit = {}
 ) {
     val scrollState = rememberLazyListState()
@@ -128,7 +132,11 @@ fun MyTraineesContent(
                 }
             }
             items(uiState.needsAttention) { trainee ->
-                NeedsAttentionCard(name = trainee.name, reason = trainee.reason)
+                NeedsAttentionCard(
+                    name = trainee.name,
+                    reason = trainee.reason,
+                    onMessageClick = { onMessageClick(trainee.id) }
+                )
             }
             item {
                 Row(
@@ -150,7 +158,8 @@ fun MyTraineesContent(
                     plan = trainee.plan,
                     adherence = trainee.adherence,
                     lastActivity = trainee.lastActivity,
-                    onViewProgress = { onViewProgress(trainee.name) }
+                    onViewProgress = { onViewProgress(trainee.name) },
+                    onMessageClick = { onMessageClick(trainee.id) }
                 )
             }
             item {
@@ -161,7 +170,7 @@ fun MyTraineesContent(
 }
 
 @Composable
-fun NeedsAttentionCard(name: String, reason: String) {
+fun NeedsAttentionCard(name: String, reason: String, onMessageClick: () -> Unit = {}) {
     GymCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
@@ -184,7 +193,7 @@ fun NeedsAttentionCard(name: String, reason: String) {
             GymSecondaryButton(text = "POKE", onClick = {}, modifier = Modifier.weight(1f).height(44.dp))
             GymSecondaryButton(
                 text = "MESSAGE",
-                onClick = {},
+                onClick = onMessageClick,
                 modifier = Modifier.weight(1f).height(44.dp)
             )
         }
@@ -192,7 +201,14 @@ fun NeedsAttentionCard(name: String, reason: String) {
 }
 
 @Composable
-fun ActiveRosterCard(name: String, plan: String, adherence: String, lastActivity: String, onViewProgress: () -> Unit = {}) {
+fun ActiveRosterCard(
+    name: String,
+    plan: String,
+    adherence: String,
+    lastActivity: String,
+    onViewProgress: () -> Unit = {},
+    onMessageClick: () -> Unit = {}
+) {
     GymCard {
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
             AsyncImage(
@@ -235,7 +251,7 @@ fun ActiveRosterCard(name: String, plan: String, adherence: String, lastActivity
                 GymButton(text = "VIEW PROGRESS", onClick = onViewProgress, modifier = Modifier.weight(1f).height(48.dp))
                 Spacer(modifier = Modifier.width(12.dp))
                 IconButton(
-                    onClick = {},
+                    onClick = onMessageClick,
                     modifier = Modifier.size(48.dp).background(Color.DarkGray, RoundedCornerShape(12.dp))
                 ) {
                     Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, tint = Color.White)

@@ -59,6 +59,11 @@ class RetrofitGymmerRepository(private val apiService: ApiService) : IGymmerRepo
     override suspend fun getBusinessInsights(): BusinessInsights = apiService.getBusinessInsights()
     override suspend fun getDefaulters(): List<Defaulter> = apiService.getDefaulters()
 
+    // Payments & Notifications
+    override suspend fun processPayment(request: PaymentRequest): PaymentResponse = apiService.processPayment(request)
+    override suspend fun updateNotificationConfig(config: NotificationConfig) = apiService.updateNotificationConfig(config)
+    override suspend fun getNotificationConfig(userId: String): NotificationConfig = apiService.getNotificationConfig(userId)
+
     // Hello
     override suspend fun hello(): Map<String, String> = apiService.hello()
     override suspend fun greet(name: String): Map<String, String> = apiService.greet(name)

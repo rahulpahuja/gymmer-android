@@ -19,21 +19,24 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = gymmerApp.repository
     private val logManager = gymmerApp.logManager
 
-    // Mock User IDs - in a real app, these would come from a SessionManager/Navigation args
+    // Current User IDs - in a real app, these would come from a SessionManager
     private val currentUserId = "00000000-0000-0000-0000-000000000000"
-    private val trainerId = "11111111-1111-1111-1111-111111111111"
+    private var otherUserId = "11111111-1111-1111-1111-111111111111" // Default to trainer
 
     private val _uiState = MutableStateFlow(ChatUiState())
     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
 
-    init {
-        loadMessages()
+    fun setOtherUser(userId: String) {
+        if (userId.isNotEmpty() && userId != otherUserId) {
+            otherUserId = userId
+            loadMessages()
+        }
     }
 
     private fun loadMessages() {
         viewModelScope.launch {
             try {
-                val messages = repository.getMessages(trainerId, currentUserId)
+                val messages = repository.getMessages(currentUserId, otherUserId)
                 _uiState.update { state ->
                     state.copy(
                         messages = messages.map { msg ->
@@ -42,7 +45,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                                 content = msg.content ?: "",
                                 timestamp = msg.sentAt?.split("T")?.lastOrNull()?.take(5) ?: "??:??",
                                 isFromMe = msg.senderId == currentUserId,
-                                isRead = true, // Backend doesn't have isRead yet
+                                isRead = true,
                                 type = MessageType.TEXT
                             )
                         }
@@ -57,7 +60,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     fun sendMessage(text: String) {
         viewModelScope.launch {
             try {
-                val sentMsg = repository.sendMessage(trainerId, currentUserId, text)
+                val sentMsg = repository.sendMessage(currentUserId, otherUserId, text)
                 val newMessage = MessageState(
                     id = sentMsg.id?.hashCode()?.toLong() ?: System.currentTimeMillis(),
                     content = sentMsg.content ?: text,

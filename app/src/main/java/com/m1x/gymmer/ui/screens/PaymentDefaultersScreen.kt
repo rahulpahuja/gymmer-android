@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,18 +34,16 @@ import com.m1x.gymmer.ui.theme.LimeGreen
 fun PaymentDefaultersScreen(
     navController: NavController,
     onMenuClick: () -> Unit = {},
-    uiState: PaymentDefaultersUiState = PaymentDefaultersUiState(
-        defaulters = listOf(
-            DefaulterState("1", "Marcus Thorne", "ELITE ANNUAL", "8 DAYS LATE", 149.00),
-            DefaulterState("2", "Elena Rodriguez", "ELITE ANNUAL", "9 DAYS LATE", 89.00),
-            DefaulterState("3", "Jason Vane", "ELITE ANNUAL", "10 DAYS LATE", 149.00)
-        )
-    ),
-    onTabSelected: (String) -> Unit = {}
+    viewModel: com.m1x.gymmer.ui.screens.viewmodel.PaymentDefaultersViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    
     PaymentDefaultersContent(
         uiState = uiState,
-        onTabSelected = onTabSelected,
+        onTabSelected = { viewModel.onTabSelected(it) },
+        onProcessPayment = { userId, amount, isPartial ->
+            viewModel.processPayment(userId, amount, isPartial)
+        },
         onMenuClick = onMenuClick,
         onNavigateToScreen = { index ->
             val route = when (index) {
@@ -68,9 +67,24 @@ fun PaymentDefaultersScreen(
 fun PaymentDefaultersContent(
     uiState: PaymentDefaultersUiState,
     onTabSelected: (String) -> Unit,
+    onProcessPayment: (String, Double, Boolean) -> Unit = { _, _, _ -> },
     onMenuClick: () -> Unit = {},
     onNavigateToScreen: (Int) -> Unit = {}
 ) {
+    var selectedDefaulter by remember { mutableStateOf<DefaulterState?>(null) }
+    var showPaymentDialog by remember { mutableStateOf(false) }
+
+    if (showPaymentDialog && selectedDefaulter != null) {
+        PaymentDialog(
+            defaulter = selectedDefaulter!!,
+            onDismiss = { showPaymentDialog = false },
+            onConfirm = { amount, isPartial ->
+                onProcessPayment(selectedDefaulter!!.id, amount, isPartial)
+                showPaymentDialog = false
+            }
+        )
+    }
+
     Scaffold(
         topBar = { GymTopBar(title = "DEFAULTERS", onMenuClick = onMenuClick) },
         bottomBar = { 
@@ -117,6 +131,10 @@ fun PaymentDefaultersContent(
                         "1" -> AppConstants.SAMPLE_PROFILE_IMAGE_3
                         "2" -> AppConstants.SAMPLE_PROFILE_IMAGE_4
                         else -> AppConstants.SAMPLE_PROFILE_IMAGE_5
+                    },
+                    onProcessPayment = {
+                        selectedDefaulter = defaulter
+                        showPaymentDialog = true
                     }
                 )
             }
@@ -130,6 +148,65 @@ fun PaymentDefaultersContent(
             }
         }
     }
+}
+
+@Composable
+fun PaymentDialog(
+    defaulter: DefaulterState,
+    onDismiss: () -> Unit,
+    onConfirm: (Double, Boolean) -> Unit
+) {
+    var isPartial by remember { mutableStateOf(false) }
+    var amountText by remember { mutableStateOf(defaulter.amount.toString()) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Process Payment", fontWeight = FontWeight.Bold) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text("Pay for ${defaulter.name}", color = Color.Gray)
+                
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = isPartial,
+                        onCheckedChange = { isPartial = it },
+                        colors = CheckboxDefaults.colors(checkedColor = LimeGreen)
+                    )
+                    Text("Partial Payment")
+                }
+
+                GymTextField(
+                    value = amountText,
+                    onValueChange = { amountText = it },
+                    label = "Amount",
+                    placeholder = "Enter amount",
+                    enabled = isPartial
+                )
+                
+                if (!isPartial) {
+                    Text("Total Due: ${CurrencyManager.formatAmount(defaulter.amount)}", color = LimeGreen)
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val amount = amountText.toDoubleOrNull() ?: defaulter.amount
+                    onConfirm(amount, isPartial)
+                }
+            ) {
+                Text("PROCESS", color = LimeGreen)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("CANCEL", color = Color.Gray)
+            }
+        },
+        containerColor = Color.DarkGray,
+        titleContentColor = Color.White,
+        textContentColor = Color.LightGray
+    )
 }
 
 @Composable
@@ -200,7 +277,7 @@ fun DefaulterTabs(selectedTab: String, onTabSelected: (String) -> Unit) {
 }
 
 @Composable
-fun DefaulterItem(name: String, plan: String, daysLate: String, amount: Double, imageUrl: String) {
+fun DefaulterItem(name: String, plan: String, daysLate: String, amount: Double, imageUrl: String, onProcessPayment: () -> Unit = {}) {
     GymCard(modifier = Modifier.padding(bottom = 12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
@@ -227,8 +304,8 @@ fun DefaulterItem(name: String, plan: String, daysLate: String, amount: Double, 
         Text(CurrencyManager.formatAmount(amount), style = MaterialTheme.typography.titleLarge, color = Color.White)
         Spacer(modifier = Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            GymButton(text = "SEND REMINDER", onClick = {}, modifier = Modifier.weight(1f).height(44.dp))
-            GymSecondaryButton(text = "MANAGE ACCESS", onClick = {}, modifier = Modifier.weight(1f).height(44.dp))
+            GymButton(text = "PROCESS PAYMENT", onClick = onProcessPayment, modifier = Modifier.weight(1f).height(44.dp))
+            GymSecondaryButton(text = "SEND REMINDER", onClick = {}, modifier = Modifier.weight(1f).height(44.dp))
         }
     }
 }

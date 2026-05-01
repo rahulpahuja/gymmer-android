@@ -130,6 +130,15 @@ interface ApiService {
     @GET("business/defaulters")
     suspend fun getDefaulters(): List<Defaulter>
 
+    @POST("payments/process")
+    suspend fun processPayment(@Body request: PaymentRequest): PaymentResponse
+
+    @PUT("notifications/config")
+    suspend fun updateNotificationConfig(@Body config: NotificationConfig)
+
+    @GET("notifications/config")
+    suspend fun getNotificationConfig(@Query("userId") userId: String): NotificationConfig
+
     @GET("hello")
     suspend fun hello(): Map<String, String>
 

@@ -39,10 +39,9 @@ fun ChatScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     
     // In a real app, we'd pass the userId to the ViewModel to load that specific chat
-    // For now, we'll just acknowledge it
     LaunchedEffect(userId) {
         if (userId.isNotEmpty()) {
-            // viewModel.loadMessagesForUser(userId)
+            viewModel.setOtherUser(userId)
         }
     }
     var messageText by remember { mutableStateOf("") }
