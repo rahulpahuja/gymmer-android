@@ -7,6 +7,7 @@ import com.m1x.gymmer.data.repository.FirebaseGymmerRepository
 import com.m1x.gymmer.data.repository.IGymmerRepository
 import com.m1x.gymmer.data.utils.CoroutineManager
 import com.m1x.gymmer.data.utils.LogManager
+import com.m1x.gymmer.data.utils.NotificationManager
 import com.m1x.gymmer.data.utils.RootDetection
 
 class GymmerApplication : Application() {
@@ -18,6 +19,9 @@ class GymmerApplication : Application() {
         private set
 
     lateinit var networkManager: NetworkManager
+        private set
+
+    lateinit var notificationManager: NotificationManager
         private set
 
     lateinit var database: AppDatabase
@@ -44,7 +48,11 @@ class GymmerApplication : Application() {
         coroutineManager = CoroutineManager()
         logManager = LogManager.getInstance(this, coroutineManager)
         networkManager = NetworkManager(logManager)
-        repository = FirebaseGymmerRepository(registrationDao = database.registrationDao())
+        notificationManager = NotificationManager(this)
+        repository = FirebaseGymmerRepository(
+            registrationDao = database.registrationDao(),
+            notificationManager = notificationManager
+        )
 
         logManager.info(LogManager.LogCategory.SYSTEM, "Application Started. Rooted: $isDeviceRooted")
     }
