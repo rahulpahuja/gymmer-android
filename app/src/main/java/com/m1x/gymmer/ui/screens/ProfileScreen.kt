@@ -44,6 +44,10 @@ fun ProfileScreen(
     ProfileContent(
         uiState = uiState,
         onMenuClick = onMenuClick,
+        onContactCoach = {
+            val trainerId = uiState.assignedTrainer.id
+            navController.navigate(Screen.Chat.createRoute(trainerId))
+        },
         onNavigateToScreen = { index ->
             val route = when (index) {
                 0 -> Screen.Dashboard.route
@@ -66,6 +70,7 @@ fun ProfileScreen(
 fun ProfileContent(
     uiState: ProfileUiState,
     onMenuClick: () -> Unit = {},
+    onContactCoach: () -> Unit = {},
     onNavigateToScreen: (Int) -> Unit = {}
 ) {
     val scrollState = rememberLazyListState()
@@ -98,7 +103,8 @@ fun ProfileContent(
             item {
                 AssignedTrainerCard(
                     name = uiState.assignedTrainer.name,
-                    specialty = uiState.assignedTrainer.specialty
+                    specialty = uiState.assignedTrainer.specialty,
+                    onContact = onContactCoach
                 )
             }
             item {
@@ -156,7 +162,7 @@ fun ProfileHeader(name: String, status: String, focus: String) {
 }
 
 @Composable
-fun AssignedTrainerCard(name: String, specialty: String) {
+fun AssignedTrainerCard(name: String, specialty: String, onContact: () -> Unit = {}) {
     GymCard {
         Text("ASSIGNED_TRAINER", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
         Spacer(modifier = Modifier.height(12.dp))
@@ -177,7 +183,7 @@ fun AssignedTrainerCard(name: String, specialty: String) {
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        GymSecondaryButton(text = "CONTACT_COACH", onClick = {}, modifier = Modifier.height(44.dp))
+        GymSecondaryButton(text = "CONTACT_COACH", onClick = onContact, modifier = Modifier.height(44.dp))
     }
 }
 

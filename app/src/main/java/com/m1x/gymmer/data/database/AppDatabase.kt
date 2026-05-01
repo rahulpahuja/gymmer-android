@@ -21,9 +21,10 @@ import com.m1x.gymmer.data.database.entity.*
         FeedbackEntity::class,
         GymClassEntity::class,
         ClassBookingEntity::class,
-        TrainerEntity::class
+        TrainerEntity::class,
+        RegistrationEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -34,6 +35,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun socialDao(): SocialDao
     abstract fun communicationDao(): CommunicationDao
     abstract fun bookingDao(): BookingDao
+    abstract fun registrationDao(): RegistrationDao
 
     companion object {
         @Volatile

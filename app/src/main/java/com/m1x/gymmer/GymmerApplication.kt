@@ -1,6 +1,7 @@
 package com.m1x.gymmer
 
 import android.app.Application
+import com.m1x.gymmer.data.database.AppDatabase
 import com.m1x.gymmer.data.network.NetworkManager
 import com.m1x.gymmer.data.repository.FirebaseGymmerRepository
 import com.m1x.gymmer.data.repository.IGymmerRepository
@@ -19,6 +20,9 @@ class GymmerApplication : Application() {
     lateinit var networkManager: NetworkManager
         private set
 
+    lateinit var database: AppDatabase
+        private set
+
     lateinit var repository: IGymmerRepository
         private set
 
@@ -31,10 +35,16 @@ class GymmerApplication : Application() {
         // Security Check: Root Detection
         isDeviceRooted = RootDetection.isDeviceRooted()
         
+        database = androidx.room.Room.databaseBuilder(
+            this,
+            AppDatabase::class.java,
+            "gymmer_db"
+        ).fallbackToDestructiveMigration().build()
+
         coroutineManager = CoroutineManager()
         logManager = LogManager.getInstance(this, coroutineManager)
         networkManager = NetworkManager(logManager)
-        repository = FirebaseGymmerRepository()
+        repository = FirebaseGymmerRepository(registrationDao = database.registrationDao())
 
         logManager.info(LogManager.LogCategory.SYSTEM, "Application Started. Rooted: $isDeviceRooted")
     }

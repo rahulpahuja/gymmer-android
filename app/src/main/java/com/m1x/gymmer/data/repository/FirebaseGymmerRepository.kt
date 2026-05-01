@@ -4,6 +4,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.m1x.gymmer.data.database.dao.RegistrationDao
+import com.m1x.gymmer.data.database.entity.RegistrationEntity
 import com.m1x.gymmer.data.network.models.*
 import kotlinx.coroutines.tasks.await
 import java.util.*
@@ -11,7 +13,8 @@ import java.util.*
 class FirebaseGymmerRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
-    private val rtdb: FirebaseDatabase = FirebaseDatabase.getInstance("https://gymmer-42987-default-rtdb.firebaseio.com/")
+    private val rtdb: FirebaseDatabase = FirebaseDatabase.getInstance("https://gymmer-42987-default-rtdb.firebaseio.com/"),
+    private val registrationDao: RegistrationDao? = null
 ) : IGymmerRepository {
 
     override suspend fun login(loginRequest: LoginRequest): User {
@@ -24,20 +27,49 @@ class FirebaseGymmerRepository(
     }
 
     override suspend fun register(registerRequest: RegisterRequest): User {
-        val result = auth.createUserWithEmailAndPassword(registerRequest.email!!, registerRequest.password!!).await()
-        val firebaseUser = result.user ?: throw Exception("Registration failed")
-        
-        val user = User(
-            id = UUID.randomUUID(), // Using random for internal model, but we'll link via UID in Firestore if needed
-            name = registerRequest.name,
-            email = registerRequest.email,
-            phone = registerRequest.phone,
-            role = registerRequest.role,
-            gymId = registerRequest.gymId
+        // 1. Store to local DB first for safety/offline queuing
+        registrationDao?.insertRegistration(
+            RegistrationEntity(
+                gymId = registerRequest.gymId?.toString(),
+                name = registerRequest.name,
+                email = registerRequest.email,
+                phone = registerRequest.phone,
+                password = registerRequest.password,
+                role = registerRequest.role
+            )
         )
-        
-        firestore.collection("users").document(firebaseUser.uid).set(user).await()
-        return user
+
+        try {
+            val result = auth.createUserWithEmailAndPassword(registerRequest.email!!, registerRequest.password!!).await()
+            val firebaseUser = result.user ?: throw Exception("Registration failed")
+            
+            val user = User(
+                id = UUID.randomUUID(),
+                name = registerRequest.name,
+                email = registerRequest.email,
+                phone = registerRequest.phone,
+                role = registerRequest.role,
+                gymId = registerRequest.gymId
+            )
+            
+            // 2. Store to Firestore
+            firestore.collection("users").document(firebaseUser.uid).set(user).await()
+
+            // 3. Store to Realtime Database
+            rtdb.getReference("users").child(firebaseUser.uid).setValue(user).await()
+
+            // If everything succeeded, we can clear the local entry
+            // Note: We use the email to identify which one to delete in case of queuing
+            registrationDao?.getPendingRegistrations()?.find { it.email == registerRequest.email }?.let {
+                registrationDao.deleteRegistration(it)
+            }
+            
+            return user
+        } catch (e: Exception) {
+            // If network fails, we've already stored in local DB. 
+            // The background sync worker (to be implemented) would handle retrying.
+            throw e 
+        }
     }
 
     override suspend fun refresh(refreshRequest: RefreshRequest): Map<String, String> {

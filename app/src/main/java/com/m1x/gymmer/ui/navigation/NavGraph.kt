@@ -30,7 +30,9 @@ sealed class Screen(val route: String) {
     object Scan : Screen("scan")
     object Nutrition : Screen("nutrition")
     object Community : Screen("community")
-    object Chat : Screen("chat")
+    object Chat : Screen("chat/{userId}") {
+        fun createRoute(userId: String) = "chat/$userId"
+    }
     object Test : Screen("test")
     object ExerciseList : Screen("exercise_list/{category}") {
         fun createRoute(category: String) = "exercise_list/$category"
@@ -165,8 +167,12 @@ fun NavContent(navController: NavHostController, openDrawer: () -> Unit) {
         composable(Screen.Community.route) {
             CommunityFeedScreen(navController = navController, onMenuClick = openDrawer)
         }
-        composable(Screen.Chat.route) {
-            ChatScreen(navController = navController, onMenuClick = openDrawer)
+        composable(
+            route = Screen.Chat.route,
+            arguments = listOf(navArgument("userId") { type = NavType.StringType; defaultValue = "11111111-1111-1111-1111-111111111111" })
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            ChatScreen(navController = navController, onMenuClick = openDrawer, userId = userId)
         }
         composable(Screen.Test.route) {
             TestScreen(onBackClick = { navController.popBackStack() })

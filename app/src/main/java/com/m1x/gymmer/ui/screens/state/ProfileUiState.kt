@@ -11,6 +11,7 @@ data class ProfileUiState(
 )
 
 data class TrainerInfo(
+    val id: String = "11111111-1111-1111-1111-111111111111",
     val name: String = "VIKRAM_SINGH",
     val specialty: String = "Strength & Biomechanics Specialist"
 )
