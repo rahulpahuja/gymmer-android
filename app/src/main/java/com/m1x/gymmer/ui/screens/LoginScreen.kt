@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,7 +37,8 @@ import com.m1x.gymmer.ui.theme.LimeGreen
 fun LoginScreen(
     navController: androidx.navigation.NavController? = null,
     viewModel: LoginViewModel = viewModel(),
-    onLoginSuccess: (UserRole) -> Unit = {}
+    onLoginSuccess: (UserRole) -> Unit = {},
+    onRegisterNavigate: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -46,6 +48,7 @@ fun LoginScreen(
         onPasswordChange = viewModel::onPasswordChanged,
         onRoleChange = viewModel::onRoleChanged,
         onLoginClick = { viewModel.login(onLoginSuccess) },
+        onRegisterClick = onRegisterNavigate,
         onTestClick = { navController?.navigate("test") }
     )
 }
@@ -57,6 +60,7 @@ fun LoginContent(
     onPasswordChange: (String) -> Unit,
     onRoleChange: (UserRole) -> Unit,
     onLoginClick: () -> Unit,
+    onRegisterClick: () -> Unit = {},
     onTestClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
@@ -191,12 +195,26 @@ fun LoginContent(
         }
 
         if (uiState.error != null) {
-            Text(
-                text = uiState.error,
-                color = Color.Red,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+            val isUserNotFound = uiState.error == "USER_NOT_FOUND"
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = if (isUserNotFound) "NO ARCHIVE FOUND FOR THIS IDENTITY" else uiState.error!!,
+                    color = if (isUserNotFound) LimeGreen else Color.Red,
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center
+                )
+                if (isUserNotFound) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    GymSecondaryButton(
+                        text = "INITIATE ENROLLMENT",
+                        onClick = onRegisterClick,
+                        modifier = Modifier.height(40.dp)
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(40.dp))

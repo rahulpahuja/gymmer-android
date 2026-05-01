@@ -1,0 +1,90 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Dark hexagon fill -->
+    <path
+        android:pathData="M100,10 L178,55 L178,145 L100,190 L22,145 L22,55 Z"
+        android:fillColor="#FF0D0D0D" />
+
+    <!-- Outer glow ring (wide, low alpha) -->
+    <path
+        android:pathData="M100,10 L178,55 L178,145 L100,190 L22,145 L22,55 Z"
+        android:fillColor="#00000000"
+        android:strokeColor="#12D7FF00"
+        android:strokeWidth="20"
+        android:strokeLineJoin="round" />
+
+    <!-- Medium glow ring -->
+    <path
+        android:pathData="M100,10 L178,55 L178,145 L100,190 L22,145 L22,55 Z"
+        android:fillColor="#00000000"
+        android:strokeColor="#1ED7FF00"
+        android:strokeWidth="10"
+        android:strokeLineJoin="miter" />
+
+    <!-- Crisp primary stroke -->
+    <path
+        android:pathData="M100,10 L178,55 L178,145 L100,190 L22,145 L22,55 Z"
+        android:fillColor="#00000000"
+        android:strokeColor="#FFD7FF00"
+        android:strokeWidth="5"
+        android:strokeLineJoin="miter" />
+
+    <!-- Inner decorative hexagon (flat-top, rotated 30°) -->
+    <path
+        android:pathData="M149,100 L125,58 L75,58 L51,100 L75,142 L125,142 Z"
+        android:fillColor="#00000000"
+        android:strokeColor="#33D7FF00"
+        android:strokeWidth="2" />
+
+    <!-- Lightning bolt soft outer halo -->
+    <path
+        android:pathData="M118,26 L63,108 L94,108 L77,174 L133,92 L102,92 Z"
+        android:fillColor="#00000000"
+        android:strokeColor="#40D7FF00"
+        android:strokeWidth="16"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Lightning bolt inner glow -->
+    <path
+        android:pathData="M118,26 L63,108 L94,108 L77,174 L133,92 L102,92 Z"
+        android:fillColor="#00000000"
+        android:strokeColor="#66D7FF00"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Lightning bolt solid fill -->
+    <path
+        android:pathData="M118,26 L63,108 L94,108 L77,174 L133,92 L102,92 Z"
+        android:fillColor="#FFD7FF00" />
+
+    <!-- Corner accent dots — outer halos (alpha 25%) -->
+    <path android:pathData="M100,10m-6,0a6,6 0 1,0 12,0a6,6 0 1,0 -12,0" android:fillColor="#40D7FF00" />
+    <path android:pathData="M178,55m-6,0a6,6 0 1,0 12,0a6,6 0 1,0 -12,0" android:fillColor="#40D7FF00" />
+    <path android:pathData="M178,145m-6,0a6,6 0 1,0 12,0a6,6 0 1,0 -12,0" android:fillColor="#40D7FF00" />
+    <path android:pathData="M100,190m-6,0a6,6 0 1,0 12,0a6,6 0 1,0 -12,0" android:fillColor="#40D7FF00" />
+    <path android:pathData="M22,145m-6,0a6,6 0 1,0 12,0a6,6 0 1,0 -12,0" android:fillColor="#40D7FF00" />
+    <path android:pathData="M22,55m-6,0a6,6 0 1,0 12,0a6,6 0 1,0 -12,0" android:fillColor="#40D7FF00" />
+
+    <!-- Corner accent dots — mid halos (alpha 60%) -->
+    <path android:pathData="M100,10m-3.2,0a3.2,3.2 0 1,0 6.4,0a3.2,3.2 0 1,0 -6.4,0" android:fillColor="#99D7FF00" />
+    <path android:pathData="M178,55m-3.2,0a3.2,3.2 0 1,0 6.4,0a3.2,3.2 0 1,0 -6.4,0" android:fillColor="#99D7FF00" />
+    <path android:pathData="M178,145m-3.2,0a3.2,3.2 0 1,0 6.4,0a3.2,3.2 0 1,0 -6.4,0" android:fillColor="#99D7FF00" />
+    <path android:pathData="M100,190m-3.2,0a3.2,3.2 0 1,0 6.4,0a3.2,3.2 0 1,0 -6.4,0" android:fillColor="#99D7FF00" />
+    <path android:pathData="M22,145m-3.2,0a3.2,3.2 0 1,0 6.4,0a3.2,3.2 0 1,0 -6.4,0" android:fillColor="#99D7FF00" />
+    <path android:pathData="M22,55m-3.2,0a3.2,3.2 0 1,0 6.4,0a3.2,3.2 0 1,0 -6.4,0" android:fillColor="#99D7FF00" />
+
+    <!-- Corner accent dots — crisp solid core -->
+    <path android:pathData="M100,10m-2,0a2,2 0 1,0 4,0a2,2 0 1,0 -4,0" android:fillColor="#FFD7FF00" />
+    <path android:pathData="M178,55m-2,0a2,2 0 1,0 4,0a2,2 0 1,0 -4,0" android:fillColor="#FFD7FF00" />
+    <path android:pathData="M178,145m-2,0a2,2 0 1,0 4,0a2,2 0 1,0 -4,0" android:fillColor="#FFD7FF00" />
+    <path android:pathData="M100,190m-2,0a2,2 0 1,0 4,0a2,2 0 1,0 -4,0" android:fillColor="#FFD7FF00" />
+    <path android:pathData="M22,145m-2,0a2,2 0 1,0 4,0a2,2 0 1,0 -4,0" android:fillColor="#FFD7FF00" />
+    <path android:pathData="M22,55m-2,0a2,2 0 1,0 4,0a2,2 0 1,0 -4,0" android:fillColor="#FFD7FF00" />
+
+</vector>

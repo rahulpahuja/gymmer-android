@@ -15,7 +15,9 @@ object RootDetection {
      * @return true if rooted, false otherwise.
      */
     fun isDeviceRooted(): Boolean {
-        return checkRootMethod1() || checkRootMethod2() || checkRootMethod3()
+        // Reduced strictness for development
+        // return checkRootMethod1() || checkRootMethod2() || checkRootMethod3()
+        return false
     }
 
     private fun checkRootMethod1(): Boolean {

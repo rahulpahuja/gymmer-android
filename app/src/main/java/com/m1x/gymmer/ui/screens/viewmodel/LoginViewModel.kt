@@ -65,7 +65,12 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 onSuccess(finalRole)
             } catch (e: Exception) {
                 logManager.info(LogManager.LogCategory.ERRORS, "Login failed: ${e.message}")
-                _uiState.update { it.copy(isLoading = false, error = "Login failed: ${e.message}") }
+                val errorMessage = if (e.message?.contains("no user record", ignoreCase = true) == true) {
+                    "USER_NOT_FOUND"
+                } else {
+                    "Login failed: ${e.message}"
+                }
+                _uiState.update { it.copy(isLoading = false, error = errorMessage) }
             }
         }
     }

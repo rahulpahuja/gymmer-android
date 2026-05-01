@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +19,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.m1x.gymmer.ui.components.*
@@ -31,29 +34,46 @@ import com.m1x.gymmer.ui.theme.LimeGreen
 fun NewMemberOnboardingScreen(
     navController: NavController,
     onMenuClick: () -> Unit = {},
-    uiState: NewMemberOnboardingUiState = NewMemberOnboardingUiState(
-        membershipPlans = listOf(
-            OnboardingPlanState("MONTHLY", "FLEXIBLE ACCESS", "₹9,999", "/MO", false),
-            OnboardingPlanState("QUARTERLY", "PHASED COMMITMENT", "₹24,999", "/QT", true, isSelected = true),
-            OnboardingPlanState("YEARLY", "ELITE ENDURANCE", "₹79,999", "/YR", false)
-        ),
-        availableTrainers = listOf(
-            OnboardingTrainerState("Arjun Sharma", "STRENGTH SPECIALIST", true),
-            OnboardingTrainerState("Priya Patel", "METABOLIC CONDITIONING", false),
-            OnboardingTrainerState("Rohan Malhotra", "POWER & OPTIMIZATION", false)
-        ),
-        totalDueToday = "₹24,999"
-    ),
-    onNameChange: (String) -> Unit = {},
-    onAgeChange: (String) -> Unit = {},
-    onGoalToggled: (String) -> Unit = {},
-    onPlanSelected: (String) -> Unit = {},
-    onTrainerSelected: (String) -> Unit = {}
+    viewModel: com.m1x.gymmer.ui.screens.viewmodel.NewMemberOnboardingViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    OnboardingContent(
+        uiState = uiState,
+        onBack = { navController.popBackStack() },
+        onNameChange = viewModel::onNameChanged,
+        onEmailChange = viewModel::onEmailChanged,
+        onPasswordChange = viewModel::onPasswordChanged,
+        onAgeChange = viewModel::onAgeChanged,
+        onGoalToggled = viewModel::toggleGoal,
+        onPlanSelected = viewModel::selectPlan,
+        onTrainerSelected = viewModel::selectTrainer,
+        onComplete = {
+            viewModel.completeOnboarding(uiState.athleteName, uiState.email, uiState.password)
+            navController.navigate("dashboard") {
+                popUpTo("login") { inclusive = true }
+            }
+        }
+    )
+}
+
+@Composable
+fun OnboardingContent(
+    uiState: NewMemberOnboardingUiState,
+    onBack: () -> Unit,
+    onNameChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onAgeChange: (String) -> Unit,
+    onGoalToggled: (String) -> Unit,
+    onPlanSelected: (String) -> Unit,
+    onTrainerSelected: (String) -> Unit,
+    onComplete: () -> Unit
 ) {
     Scaffold(
         containerColor = Color.Black,
         topBar = {
-            GymTopBar(title = "ONBOARDING", onMenuClick = onMenuClick)
+            GymTopBar(title = "ONBOARDING", onMenuClick = {})
         },
         bottomBar = {
             Column(
@@ -76,7 +96,7 @@ fun NewMemberOnboardingScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                GymButton(text = "COMPLETE ONBOARDING", onClick = { navController.popBackStack() })
+                GymButton(text = "COMPLETE ONBOARDING", onClick = onComplete)
             }
         }
     ) { padding ->
@@ -89,7 +109,7 @@ fun NewMemberOnboardingScreen(
         ) {
             item {
                 Column(modifier = Modifier.padding(top = 16.dp)) {
-                    TextButton(onClick = { navController.popBackStack() }) {
+                    TextButton(onClick = onBack) {
                         Text("RETURN TO DASHBOARD", style = MaterialTheme.typography.labelSmall, color = LimeGreen)
                     }
                     Text(
@@ -102,11 +122,6 @@ fun NewMemberOnboardingScreen(
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        GymSecondaryButton(text = "SAVE DRAFT", onClick = {}, modifier = Modifier.weight(1f).height(40.dp))
-                        GymButton(text = "ACTIVATE PROFILE", onClick = {}, modifier = Modifier.weight(1f).height(40.dp))
-                    }
                 }
             }
 
@@ -120,12 +135,15 @@ fun NewMemberOnboardingScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     GymTextField(value = uiState.athleteName, onValueChange = onNameChange, label = "FULL IDENTITY", placeholder = "Athlete Full Name")
                     Spacer(modifier = Modifier.height(16.dp))
+                    GymTextField(value = uiState.email, onValueChange = onEmailChange, label = "ACCESS EMAIL", placeholder = "athlete@gymmer.com")
+                    Spacer(modifier = Modifier.height(16.dp))
+                    GymTextField(value = uiState.password, onValueChange = onPasswordChange, label = "SECURE PROTOCOL", placeholder = "••••••••", isPassword = true)
+                    Spacer(modifier = Modifier.height(16.dp))
                     GymTextField(value = uiState.age, onValueChange = onAgeChange, label = "TEMPORAL AGE", placeholder = "24")
                     Spacer(modifier = Modifier.height(16.dp))
                     Text("PRIMARY DIRECTIVES (GOALS)", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
                     Spacer(modifier = Modifier.height(8.dp))
                     
-                    // Replaced FlowRow with a simple scrollable Row to avoid version mismatch crash
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

@@ -2,6 +2,8 @@ package com.m1x.gymmer.ui.screens.state
 
 data class NewMemberOnboardingUiState(
     val athleteName: String = "",
+    val email: String = "",
+    val password: String = "",
     val age: String = "24",
     val selectedGoals: Set<String> = setOf("HYPERTROPHY"),
     val availableGoals: List<String> = listOf("HYPERTROPHY", "FAT REDUCTION", "ENDURANCE ENGINE", "POWERLIFTING"),

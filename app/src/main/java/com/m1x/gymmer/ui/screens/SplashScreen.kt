@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.m1x.gymmer.ui.components.GymmerLogoFull
 import com.m1x.gymmer.ui.theme.GymmerTheme
 import com.m1x.gymmer.ui.theme.LimeGreen
 import kotlinx.coroutines.delay

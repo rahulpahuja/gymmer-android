@@ -61,6 +61,14 @@ class NewMemberOnboardingViewModel(application: Application) : AndroidViewModel(
         _uiState.update { it.copy(athleteName = name) }
     }
 
+    fun onEmailChanged(email: String) {
+        _uiState.update { it.copy(email = email) }
+    }
+
+    fun onPasswordChanged(password: String) {
+        _uiState.update { it.copy(password = password) }
+    }
+
     fun onAgeChanged(age: String) {
         _uiState.update { it.copy(age = age) }
     }

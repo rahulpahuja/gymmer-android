@@ -56,13 +56,13 @@ fun GymNavHost(navController: NavHostController) {
     }
 
     // Screens that should show the drawer
-    val showDrawer = currentRoute != Screen.Login.route
+    val showDrawer = currentRoute != Screen.Login.route && currentRoute != Screen.Splash.route
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        gesturesEnabled = showDrawer,
-        drawerContent = {
-            if (showDrawer) {
+    if (showDrawer) {
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            gesturesEnabled = true,
+            drawerContent = {
                 GymDrawerContent(
                     selectedRoute = currentRoute,
                     onRouteSelected = { route ->
@@ -81,111 +81,121 @@ fun GymNavHost(navController: NavHostController) {
                     }
                 )
             }
-        }
-    ) {
-        NavHost(
-            navController = navController,
-            startDestination = Screen.Splash.route
         ) {
-            composable(Screen.Splash.route) {
-                SplashScreen(
-                    onTimeout = {
-                        navController.navigate(Screen.Login.route) {
-                            popUpTo(Screen.Splash.route) { inclusive = true }
-                        }
+            NavContent(navController, openDrawer)
+        }
+    } else {
+        NavContent(navController, openDrawer)
+    }
+}
+
+@Composable
+fun NavContent(navController: NavHostController, openDrawer: () -> Unit) {
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Splash.route
+    ) {
+        composable(Screen.Splash.route) {
+            SplashScreen(
+                onTimeout = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
                     }
-                )
-            }
-            composable(Screen.Login.route) {
-                LoginScreen(
-                    navController = navController,
-                    onLoginSuccess = { role ->
-                        val destination = when (role) {
-                            UserRole.TRAINEE -> Screen.Dashboard.route
-                            UserRole.TRAINER -> Screen.TrainerStudio.route
-                            UserRole.BUSINESS -> Screen.BusinessInsights.route
-                            UserRole.SUPER_USER -> Screen.Dashboard.route // For now, direct to Dashboard or a new Super Dashboard
-                        }
-                        navController.navigate(destination) {
-                            popUpTo(Screen.Login.route) { inclusive = true }
-                        }
+                }
+            )
+        }
+        composable(Screen.Login.route) {
+            LoginScreen(
+                navController = navController,
+                onLoginSuccess = { role ->
+                    val destination = when (role) {
+                        UserRole.TRAINEE -> Screen.Dashboard.route
+                        UserRole.TRAINER -> Screen.TrainerStudio.route
+                        UserRole.BUSINESS -> Screen.BusinessInsights.route
+                        UserRole.SUPER_USER -> Screen.Dashboard.route 
                     }
-                )
-            }
-            composable(Screen.Dashboard.route) {
-                DashboardScreen(navController = navController, onMenuClick = openDrawer)
-            }
-            composable(Screen.Workouts.route) {
-                WorkoutsScreen(navController = navController, onMenuClick = openDrawer)
-            }
-            composable(Screen.Profile.route) {
-                ProfileScreen(navController = navController, onMenuClick = openDrawer)
-            }
-            composable(Screen.AttendanceLogs.route) {
-                AttendanceLogsScreen(navController = navController, onMenuClick = openDrawer)
-            }
-            composable(Screen.TrainerStudio.route) {
-                TrainerStudioScreen(navController = navController, onMenuClick = openDrawer)
-            }
-            composable(Screen.PaymentDefaulters.route) {
-                PaymentDefaultersScreen(navController = navController, onMenuClick = openDrawer)
-            }
-            composable(Screen.BusinessInsights.route) {
-                BusinessInsightsScreen(navController = navController, onMenuClick = openDrawer)
-            }
-            composable(Screen.Wallet.route) {
-                WalletScreen(navController = navController, onMenuClick = openDrawer)
-            }
-            composable(Screen.NewMemberOnboarding.route) {
-                NewMemberOnboardingScreen(navController = navController)
-            }
-            composable(Screen.ExerciseDetail.route) {
-                ExerciseDetailScreen(navController = navController, onMenuClick = openDrawer)
-            }
-            composable(Screen.MyTrainees.route) {
-                MyTraineesScreen(navController = navController, onMenuClick = openDrawer)
-            }
-            composable(Screen.Scan.route) {
-                ScanScreen(navController = navController, onMenuClick = openDrawer)
-            }
-            composable(Screen.Nutrition.route) {
-                NutritionScreen(navController = navController, onMenuClick = openDrawer)
-            }
-            composable(Screen.Community.route) {
-                CommunityFeedScreen(navController = navController, onMenuClick = openDrawer)
-            }
-            composable(Screen.Chat.route) {
-                ChatScreen(navController = navController, onMenuClick = openDrawer)
-            }
-            composable(Screen.Test.route) {
-                TestScreen(onBackClick = { navController.popBackStack() })
-            }
-            composable(
-                route = Screen.ExerciseList.route,
-                arguments = listOf(navArgument("category") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val category = backStackEntry.arguments?.getString("category") ?: "All"
-                ExerciseListScreen(
-                    navController = navController,
-                    category = category,
-                    onMenuClick = openDrawer
-                )
-            }
-            composable(
-                route = Screen.VideoPlayer.route,
-                arguments = listOf(
-                    navArgument("videoTitle") { type = NavType.StringType },
-                    navArgument("videoUrl") { type = NavType.StringType }
-                )
-            ) { backStackEntry ->
-                val title = backStackEntry.arguments?.getString("videoTitle") ?: "Video"
-                val url = backStackEntry.arguments?.getString("videoUrl") ?: ""
-                VideoPlayerScreen(
-                    navController = navController,
-                    videoTitle = title,
-                    videoUrl = url
-                )
-            }
+                    navController.navigate(destination) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                },
+                onRegisterNavigate = {
+                    navController.navigate(Screen.NewMemberOnboarding.route)
+                }
+            )
+        }
+        composable(Screen.Dashboard.route) {
+            DashboardScreen(navController = navController, onMenuClick = openDrawer)
+        }
+        composable(Screen.Workouts.route) {
+            WorkoutsScreen(navController = navController, onMenuClick = openDrawer)
+        }
+        composable(Screen.Profile.route) {
+            ProfileScreen(navController = navController, onMenuClick = openDrawer)
+        }
+        composable(Screen.AttendanceLogs.route) {
+            AttendanceLogsScreen(navController = navController, onMenuClick = openDrawer)
+        }
+        composable(Screen.TrainerStudio.route) {
+            TrainerStudioScreen(navController = navController, onMenuClick = openDrawer)
+        }
+        composable(Screen.PaymentDefaulters.route) {
+            PaymentDefaultersScreen(navController = navController, onMenuClick = openDrawer)
+        }
+        composable(Screen.BusinessInsights.route) {
+            BusinessInsightsScreen(navController = navController, onMenuClick = openDrawer)
+        }
+        composable(Screen.Wallet.route) {
+            WalletScreen(navController = navController, onMenuClick = openDrawer)
+        }
+        composable(Screen.NewMemberOnboarding.route) {
+            NewMemberOnboardingScreen(navController = navController)
+        }
+        composable(Screen.ExerciseDetail.route) {
+            ExerciseDetailScreen(navController = navController, onMenuClick = openDrawer)
+        }
+        composable(Screen.MyTrainees.route) {
+            MyTraineesScreen(navController = navController, onMenuClick = openDrawer)
+        }
+        composable(Screen.Scan.route) {
+            ScanScreen(navController = navController, onMenuClick = openDrawer)
+        }
+        composable(Screen.Nutrition.route) {
+            NutritionScreen(navController = navController, onMenuClick = openDrawer)
+        }
+        composable(Screen.Community.route) {
+            CommunityFeedScreen(navController = navController, onMenuClick = openDrawer)
+        }
+        composable(Screen.Chat.route) {
+            ChatScreen(navController = navController, onMenuClick = openDrawer)
+        }
+        composable(Screen.Test.route) {
+            TestScreen(onBackClick = { navController.popBackStack() })
+        }
+        composable(
+            route = Screen.ExerciseList.route,
+            arguments = listOf(navArgument("category") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val category = backStackEntry.arguments?.getString("category") ?: "All"
+            ExerciseListScreen(
+                navController = navController,
+                category = category,
+                onMenuClick = openDrawer
+            )
+        }
+        composable(
+            route = Screen.VideoPlayer.route,
+            arguments = listOf(
+                navArgument("videoTitle") { type = NavType.StringType },
+                navArgument("videoUrl") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("videoTitle") ?: "Video"
+            val url = backStackEntry.arguments?.getString("videoUrl") ?: ""
+            VideoPlayerScreen(
+                navController = navController,
+                videoTitle = title,
+                videoUrl = url
+            )
         }
     }
 }
