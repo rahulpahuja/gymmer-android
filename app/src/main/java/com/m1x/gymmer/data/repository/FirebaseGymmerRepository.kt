@@ -21,9 +21,26 @@ class FirebaseGymmerRepository(
         val result = auth.signInWithEmailAndPassword(loginRequest.email!!, loginRequest.password!!).await()
         val firebaseUser = result.user ?: throw Exception("Login failed")
         
-        // Fetch user details from Firestore
-        val doc = firestore.collection("users").document(firebaseUser.uid).get().await()
-        return doc.toObject(User::class.java) ?: User(id = UUID.fromString(firebaseUser.uid), email = firebaseUser.email)
+        // Try RTDB first since that's what the user prefers
+        val rtdbSnapshot = rtdb.getReference("users").child(firebaseUser.uid).get().await()
+        if (rtdbSnapshot.exists()) {
+            return User(
+                id = UUID.fromString(rtdbSnapshot.child("id").value?.toString() ?: firebaseUser.uid),
+                name = rtdbSnapshot.child("name").value?.toString(),
+                email = rtdbSnapshot.child("email").value?.toString(),
+                phone = rtdbSnapshot.child("phone").value?.toString(),
+                role = rtdbSnapshot.child("role").value?.toString(),
+                gymId = rtdbSnapshot.child("gymId").value?.toString()?.let { UUID.fromString(it) }
+            )
+        }
+
+        // Fallback to Firestore
+        try {
+            val doc = firestore.collection("users").document(firebaseUser.uid).get().await()
+            return doc.toObject(User::class.java) ?: User(id = UUID.fromString(firebaseUser.uid), email = firebaseUser.email)
+        } catch (e: Exception) {
+            return User(id = UUID.fromString(firebaseUser.uid), email = firebaseUser.email)
+        }
     }
 
     override suspend fun register(registerRequest: RegisterRequest): User {
@@ -52,11 +69,23 @@ class FirebaseGymmerRepository(
                 gymId = registerRequest.gymId
             )
             
-            // 2. Store to Firestore
-            firestore.collection("users").document(firebaseUser.uid).set(user).await()
+            // 2. Store to Firestore (Try-catch as it might not be enabled)
+            try {
+                firestore.collection("users").document(firebaseUser.uid).set(user).await()
+            } catch (e: Exception) {
+                // Ignore Firestore errors if only RTDB is requested
+            }
 
-            // 3. Store to Realtime Database
-            rtdb.getReference("users").child(firebaseUser.uid).setValue(user).await()
+            // 3. Store to Realtime Database - Flattened for better compatibility
+            val rtdbUser = mapOf(
+                "id" to user.id.toString(),
+                "name" to user.name,
+                "email" to user.email,
+                "phone" to user.phone,
+                "role" to user.role,
+                "gymId" to user.gymId?.toString()
+            )
+            rtdb.getReference("users").child(firebaseUser.uid).setValue(rtdbUser).await()
 
             // If everything succeeded, we can clear the local entry
             // Note: We use the email to identify which one to delete in case of queuing
