@@ -23,10 +23,13 @@ import androidx.navigation.NavController
 import com.m1x.gymmer.ui.components.GymCard
 import com.m1x.gymmer.ui.components.GymStatItem
 import com.m1x.gymmer.ui.components.GymTopBar
+import com.m1x.gymmer.ui.screens.state.FoodItemState
 import com.m1x.gymmer.ui.screens.state.MealState
 import com.m1x.gymmer.ui.screens.state.NutritionUiState
 import com.m1x.gymmer.ui.screens.viewmodel.NutritionViewModel
+import com.m1x.gymmer.ui.theme.GymmerTheme
 import com.m1x.gymmer.ui.theme.LimeGreen
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun NutritionScreen(

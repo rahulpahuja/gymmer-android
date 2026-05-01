@@ -31,7 +31,9 @@ import com.m1x.gymmer.ui.screens.state.CommunityFeedUiState
 import com.m1x.gymmer.ui.screens.state.LeaderboardState
 import com.m1x.gymmer.ui.screens.state.PostState
 import com.m1x.gymmer.ui.screens.viewmodel.CommunityFeedViewModel
+import com.m1x.gymmer.ui.theme.GymmerTheme
 import com.m1x.gymmer.ui.theme.LimeGreen
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun CommunityFeedScreen(

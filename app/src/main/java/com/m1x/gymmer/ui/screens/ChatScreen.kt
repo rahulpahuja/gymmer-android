@@ -25,7 +25,9 @@ import com.m1x.gymmer.ui.components.GymTopBar
 import com.m1x.gymmer.ui.screens.state.MessageState
 import com.m1x.gymmer.ui.screens.state.MessageType
 import com.m1x.gymmer.ui.screens.viewmodel.ChatViewModel
+import com.m1x.gymmer.ui.theme.GymmerTheme
 import com.m1x.gymmer.ui.theme.LimeGreen
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ChatScreen(

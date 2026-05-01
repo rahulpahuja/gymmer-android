@@ -30,6 +30,9 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.tooling.preview.Preview
+import com.m1x.gymmer.ui.theme.GymmerTheme
 import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class, UnstableApi::class)

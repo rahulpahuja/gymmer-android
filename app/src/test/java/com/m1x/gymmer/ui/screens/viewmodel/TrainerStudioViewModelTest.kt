@@ -4,7 +4,7 @@ import com.m1x.gymmer.GymmerApplication
 import com.m1x.gymmer.data.network.models.Exercise
 import com.m1x.gymmer.data.network.models.TrainerDashboardData
 import com.m1x.gymmer.data.network.models.User
-import com.m1x.gymmer.data.repository.GymmerRepository
+import com.m1x.gymmer.data.repository.IGymmerRepository
 import com.m1x.gymmer.data.utils.LogManager
 import io.mockk.coEvery
 import io.mockk.every
@@ -28,7 +28,7 @@ class TrainerStudioViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var application: GymmerApplication
-    private lateinit var repository: GymmerRepository
+    private lateinit var repository: IGymmerRepository
     private lateinit var logManager: LogManager
     private lateinit var viewModel: TrainerStudioViewModel
 

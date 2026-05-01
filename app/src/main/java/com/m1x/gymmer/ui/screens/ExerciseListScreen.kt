@@ -19,8 +19,10 @@ import androidx.navigation.NavController
 import com.m1x.gymmer.ui.components.GymCard
 import com.m1x.gymmer.ui.components.GymTopBar
 import com.m1x.gymmer.ui.navigation.Screen
+import com.m1x.gymmer.ui.theme.GymmerTheme
 import com.m1x.gymmer.ui.theme.LimeGreen
 import coil.compose.AsyncImage
+import androidx.compose.ui.tooling.preview.Preview
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
