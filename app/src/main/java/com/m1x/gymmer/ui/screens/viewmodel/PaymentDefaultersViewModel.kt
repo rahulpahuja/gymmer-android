@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.m1x.gymmer.GymmerApplication
+import com.m1x.gymmer.data.network.models.PaymentRequest
 import com.m1x.gymmer.data.utils.LogManager
 import com.m1x.gymmer.ui.screens.state.DefaulterState
 import com.m1x.gymmer.ui.screens.state.PaymentDefaultersUiState
@@ -44,6 +45,25 @@ class PaymentDefaultersViewModel(application: Application) : AndroidViewModel(ap
                 }
             } catch (e: Exception) {
                 logManager.info(LogManager.LogCategory.ERRORS, "Failed to load defaulters: ${e.message}")
+            }
+        }
+    }
+
+    fun processPayment(userId: String, amount: Double, isPartial: Boolean) {
+        viewModelScope.launch {
+            try {
+                val response = repository.processPayment(
+                    PaymentRequest(
+                        userId = userId,
+                        amount = amount,
+                        isPartial = isPartial,
+                        remarks = if (isPartial) "Partial fee payment" else "Full fee payment"
+                    )
+                )
+                logManager.info(LogManager.LogCategory.SYSTEM, "Payment processed: ${response.transactionId}")
+                loadDefaulters() // Refresh list
+            } catch (e: Exception) {
+                logManager.info(LogManager.LogCategory.ERRORS, "Payment failed: ${e.message}")
             }
         }
     }

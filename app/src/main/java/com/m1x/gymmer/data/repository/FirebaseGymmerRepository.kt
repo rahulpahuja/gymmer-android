@@ -9,6 +9,7 @@ import com.google.firebase.firestore.Query
 import com.m1x.gymmer.data.database.dao.RegistrationDao
 import com.m1x.gymmer.data.database.entity.RegistrationEntity
 import com.m1x.gymmer.data.network.models.*
+import com.m1x.gymmer.data.utils.NotificationManager
 import kotlinx.coroutines.tasks.await
 import java.util.*
 
@@ -16,7 +17,8 @@ class FirebaseGymmerRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
     private val rtdb: FirebaseDatabase = FirebaseDatabase.getInstance("https://gymmer-42987-default-rtdb.firebaseio.com/"),
-    private val registrationDao: RegistrationDao? = null
+    private val registrationDao: RegistrationDao? = null,
+    private val notificationManager: NotificationManager? = null
 ) : IGymmerRepository {
 
     init {
@@ -407,6 +409,52 @@ class FirebaseGymmerRepository(
     override suspend fun getDefaulters(): List<Defaulter> {
         val snapshot = firestore.collection("defaulters").get().await()
         return snapshot.toObjects(Defaulter::class.java)
+    }
+
+    override suspend fun processPayment(request: PaymentRequest): PaymentResponse {
+        val transactionId = UUID.randomUUID().toString()
+        val timestamp = Date().toString()
+        
+        // 1. Record in Firestore
+        val paymentData = mapOf(
+            "transactionId" to transactionId,
+            "userId" to request.userId,
+            "amount" to request.amount,
+            "isPartial" to request.isPartial,
+            "paymentMethod" to request.paymentMethod,
+            "remarks" to request.remarks,
+            "timestamp" to timestamp
+        )
+        firestore.collection("payments").document(transactionId).set(paymentData).await()
+
+        // 2. Fetch user details for notification
+        val user = getProfile(request.userId)
+        
+        // 3. Trigger Notifications
+        notificationManager?.sendPaymentNotification(
+            userName = user.name ?: "Athlete",
+            amount = request.amount,
+            isPartial = request.isPartial,
+            userPhone = user.phone,
+            trainerPhone = "9999999999", // Mock trainer phone
+            ownerPhone = "8888888888"   // Mock owner phone
+        )
+
+        return PaymentResponse(
+            transactionId = transactionId,
+            status = "SUCCESS",
+            remainingAmount = 0.0, // Should be calculated based on user's total dues
+            timestamp = timestamp
+        )
+    }
+
+    override suspend fun updateNotificationConfig(config: NotificationConfig) {
+        firestore.collection("notification_configs").document(config.userId).set(config).await()
+    }
+
+    override suspend fun getNotificationConfig(userId: String): NotificationConfig {
+        val doc = firestore.collection("notification_configs").document(userId).get().await()
+        return doc.toObject(NotificationConfig::class.java) ?: NotificationConfig(userId)
     }
 
     override suspend fun hello(): Map<String, String> = mapOf("message" to "Hello from Firebase")
