@@ -1,5 +1,7 @@
 package com.m1x.gymmer.data.repository
 
+import android.util.Log
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,6 +22,9 @@ class FirebaseGymmerRepository(
     init {
         // Enable offline persistence for RTDB to handle connectivity gaps
         rtdb.setPersistenceEnabled(true)
+        val options = com.google.firebase.FirebaseApp.getInstance().options
+        Log.d("FIREBASE_DEBUG", "Connected to Project: ${options.projectId}")
+        Log.d("FIREBASE_DEBUG", "RTDB URL: ${rtdb.reference.toString()}")
     }
 
     override suspend fun login(loginRequest: LoginRequest): User {
@@ -49,6 +54,7 @@ class FirebaseGymmerRepository(
     }
 
     override suspend fun register(registerRequest: RegisterRequest): User {
+        Log.d("FIREBASE_DEBUG", "Starting registration for: ${registerRequest.email}")
         // 1. Store to local DB first for safety/offline queuing
         registrationDao?.insertRegistration(
             RegistrationEntity(
@@ -83,7 +89,15 @@ class FirebaseGymmerRepository(
                 "role" to user.role,
                 "gymId" to user.gymId?.toString()
             )
-            rtdb.getReference("users").child(firebaseUser.uid).setValue(rtdbUser).await()
+            val userPath = "users/${firebaseUser.uid}"
+            Log.d("FIREBASE_DEBUG", "Attempting RTDB write to: $userPath")
+            try {
+                rtdb.getReference("users").child(firebaseUser.uid).setValue(rtdbUser).await()
+                Log.d("FIREBASE_DEBUG", "RTDB Write Success")
+            } catch (rtdbEx: Exception) {
+                Log.e("FIREBASE_DEBUG", "RTDB Write FAILED: ${rtdbEx.message}")
+                rtdbEx.printStackTrace()
+            }
 
             // 3. Store to Firestore (Try-catch as it's failing in logs)
             try {

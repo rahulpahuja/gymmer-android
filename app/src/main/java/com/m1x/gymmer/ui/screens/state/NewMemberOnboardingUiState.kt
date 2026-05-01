@@ -5,6 +5,7 @@ data class NewMemberOnboardingUiState(
     val email: String = "",
     val password: String = "",
     val age: String = "24",
+    val isLoading: Boolean = false,
     val selectedGoals: Set<String> = setOf("HYPERTROPHY"),
     val availableGoals: List<String> = listOf("HYPERTROPHY", "FAT REDUCTION", "ENDURANCE ENGINE", "POWERLIFTING"),
     val membershipPlans: List<OnboardingPlanState> = emptyList(),

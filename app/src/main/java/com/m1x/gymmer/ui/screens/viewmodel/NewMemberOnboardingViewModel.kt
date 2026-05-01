@@ -9,8 +9,11 @@ import com.m1x.gymmer.data.utils.LogManager
 import com.m1x.gymmer.ui.screens.state.NewMemberOnboardingUiState
 import com.m1x.gymmer.ui.screens.state.OnboardingPlanState
 import com.m1x.gymmer.ui.screens.state.OnboardingTrainerState
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -31,6 +34,9 @@ class NewMemberOnboardingViewModel(application: Application) : AndroidViewModel(
         )
     )
     val uiState: StateFlow<NewMemberOnboardingUiState> = _uiState.asStateFlow()
+
+    private val _navigationEvent = MutableSharedFlow<String>()
+    val navigationEvent: SharedFlow<String> = _navigationEvent.asSharedFlow()
 
     init {
         loadTrainers()
@@ -104,7 +110,7 @@ class NewMemberOnboardingViewModel(application: Application) : AndroidViewModel(
     fun completeOnboarding(email: String, phone: String, password: String) {
         viewModelScope.launch {
             try {
-                _uiState.update { it.copy(email = email, password = password) }
+                _uiState.update { it.copy(email = email, password = password, isLoading = true) }
                 
                 val request = RegisterRequest(
                     gymId = UUID.fromString("00000000-0000-0000-0000-000000000000"), // Default Gym
@@ -117,8 +123,13 @@ class NewMemberOnboardingViewModel(application: Application) : AndroidViewModel(
                 
                 val user = repository.register(request)
                 logManager.info(LogManager.LogCategory.AUTH, "Registration successful for: ${user.name}")
+                
+                _uiState.update { it.copy(isLoading = false) }
+                // Notify UI that registration is complete and we can navigate
+                _navigationEvent.emit("dashboard")
             } catch (e: Exception) {
                 logManager.info(LogManager.LogCategory.ERRORS, "Onboarding failed: ${e.message}")
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }

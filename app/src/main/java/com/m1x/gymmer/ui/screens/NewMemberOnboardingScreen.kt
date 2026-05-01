@@ -10,8 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,6 +37,15 @@ fun NewMemberOnboardingScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    // Async Navigation Observer
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { route ->
+            navController.navigate(route) {
+                popUpTo("login") { inclusive = true }
+            }
+        }
+    }
+
     OnboardingContent(
         uiState = uiState,
         onBack = { navController.popBackStack() },
@@ -49,10 +57,7 @@ fun NewMemberOnboardingScreen(
         onPlanSelected = viewModel::selectPlan,
         onTrainerSelected = viewModel::selectTrainer,
         onComplete = {
-            viewModel.completeOnboarding(uiState.email, uiState.age, uiState.password) // phone is age field for now
-            navController.navigate("dashboard") {
-                popUpTo("login") { inclusive = true }
-            }
+            viewModel.completeOnboarding(uiState.email, uiState.age, uiState.password)
         }
     )
 }
@@ -96,7 +101,11 @@ fun OnboardingContent(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                GymButton(text = "COMPLETE ONBOARDING", onClick = onComplete)
+                GymButton(
+                    text = if (uiState.isLoading) "ENROLLING..." else "COMPLETE ONBOARDING",
+                    onClick = onComplete,
+                    enabled = !uiState.isLoading
+                )
             }
         }
     ) { padding ->
