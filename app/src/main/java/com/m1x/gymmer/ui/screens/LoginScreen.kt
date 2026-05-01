@@ -296,3 +296,17 @@ fun LoginScreenPreview() {
         )
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun SocialAuthButtonPreview() {
+    GymmerTheme {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            SocialAuthButton(text = "Google", modifier = Modifier.weight(1f))
+            SocialAuthButton(text = "Apple", modifier = Modifier.weight(1f))
+        }
+    }
+}

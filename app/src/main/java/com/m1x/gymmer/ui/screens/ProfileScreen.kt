@@ -272,3 +272,54 @@ fun ProfileScreenPreview() {
         ProfileContent(uiState = ProfileUiState())
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun ProfileHeaderPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            ProfileHeader(name = "AKASH VERMA", status = "ELITE MEMBER", focus = "Hypertrophy & Conditioning")
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun AssignedTrainerCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            AssignedTrainerCard(name = "VIKRAM SINGH", specialty = "Strength & Biomechanics Specialist")
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun MetricBarPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            MetricBar(label = "Strength", progress = 0.75f, value = "75%")
+            MetricBar(label = "Endurance", progress = 0.55f, value = "55%")
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun HistoryItemPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            HistoryItem(title = "Morning HIIT", value = "+12%", subtitle = "Aug 14 • 45 min")
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun MembershipStatusCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            MembershipStatusCard(status = "ACTIVE", until = "UNTIL DEC 2024", description = "Access to all premium zones.")
+        }
+    }
+}

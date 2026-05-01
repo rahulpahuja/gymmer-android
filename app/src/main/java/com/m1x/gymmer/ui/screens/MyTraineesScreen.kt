@@ -252,3 +252,28 @@ fun MyTraineesScreenPreview() {
         MyTraineesContent(uiState = MyTraineesUiState(), onSearchQueryChange = {})
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun NeedsAttentionCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            NeedsAttentionCard(name = "Sarah Connor", reason = "No activity in 5 days")
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun ActiveRosterCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            ActiveRosterCard(
+                name = "Marcus Thorne",
+                plan = "ELITE ANNUAL",
+                adherence = "80%",
+                lastActivity = "Today, 06:45 AM"
+            )
+        }
+    }
+}

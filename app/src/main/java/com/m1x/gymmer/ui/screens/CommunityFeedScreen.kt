@@ -231,3 +231,36 @@ fun LeaderboardItem(entry: LeaderboardState) {
         }
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun PostItemPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            PostItem(
+                PostState(
+                    id = "1",
+                    userName = "Marcus Thorne",
+                    userAvatar = null,
+                    content = "Just crushed a new PR on deadlifts! 180kg x 5. The grind never stops.",
+                    imageUrl = null,
+                    timeAgo = "2h ago",
+                    likesCount = 48,
+                    commentsCount = 12,
+                    isLiked = true
+                )
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun LeaderboardItemPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            LeaderboardItem(LeaderboardState(rank = 1, userName = "Marcus Thorne", points = 2840))
+            LeaderboardItem(LeaderboardState(rank = 3, userName = "You", points = 1920, isCurrentUser = true))
+        }
+    }
+}

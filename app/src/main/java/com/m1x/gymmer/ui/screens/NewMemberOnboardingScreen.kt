@@ -283,3 +283,43 @@ fun NewMemberOnboardingScreenPreview() {
         NewMemberOnboardingScreen(navController = rememberNavController())
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun GoalTagPreview() {
+    GymmerTheme {
+        Row(modifier = Modifier.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            GoalTag(text = "Fat Loss", isSelected = true, onClick = {})
+            GoalTag(text = "Strength", isSelected = false, onClick = {})
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun PlanOptionPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            PlanOption(
+                title = "QUARTERLY",
+                subtitle = "PHASED COMMITMENT",
+                price = "₹24,999",
+                unit = "/QT",
+                isRecommended = true,
+                isSelected = true,
+                onClick = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun TrainerSelectOptionPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            TrainerSelectOption(name = "Arjun Sharma", specialty = "STRENGTH SPECIALIST", isSelected = true, onSelect = {})
+            TrainerSelectOption(name = "Priya Patel", specialty = "METABOLIC CONDITIONING", isSelected = false, onSelect = {})
+        }
+    }
+}

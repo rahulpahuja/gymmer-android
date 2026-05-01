@@ -197,3 +197,54 @@ fun ChatInput(
     }
 }
 
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun MessageBubbleSentPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            MessageBubble(
+                MessageState(1L, "Hey! Ready for today's session?", "09:41 AM", isFromMe = true, isRead = true)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun MessageBubbleReceivedPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            MessageBubble(
+                MessageState(2L, "Absolutely! I've been warming up.", "09:42 AM", isFromMe = false, isRead = true)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun VoiceNoteBubblePreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            MessageBubble(
+                MessageState(3L, "", "09:43 AM", isFromMe = true, isRead = true, type = MessageType.VOICE, duration = "0:12")
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun ChatInputEmptyPreview() {
+    GymmerTheme {
+        ChatInput(value = "", onValueChange = {}, onSend = {}, onVoiceNote = {})
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun ChatInputWithTextPreview() {
+    GymmerTheme {
+        ChatInput(value = "On my way!", onValueChange = {}, onSend = {}, onVoiceNote = {})
+    }
+}

@@ -143,3 +143,22 @@ fun GymCard(
         )
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun ExerciseVideoCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            ExerciseVideoCard(
+                exercise = ExerciseItem(
+                    id = "1",
+                    title = "Chest Press",
+                    videoUrl = "",
+                    thumbnailUrl = "",
+                    duration = "4 min"
+                ),
+                onClick = {}
+            )
+        }
+    }
+}

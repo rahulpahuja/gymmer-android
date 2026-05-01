@@ -179,3 +179,46 @@ fun MealCard(meal: MealState) {
         }
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun CalorieOverviewCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            CalorieOverviewCard(NutritionUiState())
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun MacroSectionPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            MacroSection(NutritionUiState())
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun MealCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            MealCard(
+                MealState(
+                    id = 1L,
+                    name = "Breakfast",
+                    calories = 620,
+                    protein = 40f,
+                    carbs = 80f,
+                    fat = 20f,
+                    items = listOf(
+                        FoodItemState(1L, "Oats", "100g", 380),
+                        FoodItemState(2L, "Protein Shake", "1 scoop", 240)
+                    )
+                )
+            )
+        }
+    }
+}

@@ -302,3 +302,34 @@ fun TrainerStudioScreenPreview() {
         TrainerStudioContent(uiState = TrainerStudioUiState())
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun ContentReelBannerPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            ContentReelBanner()
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun MachineCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            MachineCard(name = "Lat Pulldown", videoCount = "3 LINKED VIDEOS")
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun UploadItemPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            UploadItem(title = "Back Squat Form Mastery", subtitle = "Machine: Smith Machine", isActive = true)
+            UploadItem(title = "Single Arm Cable Row", subtitle = "Machine: Cable Crossover", isActive = false)
+        }
+    }
+}

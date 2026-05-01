@@ -305,3 +305,51 @@ fun DashboardScreenPreview() {
         )
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun CheckInCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            CheckInCard(status = "CHECK IN REQUIRED", lastActivity = "Yesterday, 18:45", onCheckInClick = {})
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun PremiumPlanCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            PremiumPlanCard(name = "Premium Plan", expiresDays = 12, progress = 0.8f, isPro = true)
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun TodaysTargetCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            TodaysTargetCard(
+                title = "Shoulders & Triceps",
+                exercises = listOf("Overhead Press", "Lateral Raises", "Cable Pushdowns")
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun ActiveSessionsSectionPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            ActiveSessionsSection(
+                sessions = listOf(
+                    ActiveSession("1", "Morning HIIT", "45 min", "320 kcal"),
+                    ActiveSession("2", "Chest & Back", "60 min", "410 kcal")
+                )
+            )
+        }
+    }
+}

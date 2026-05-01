@@ -266,3 +266,55 @@ fun WalletScreenPreview() {
         WalletContent(uiState = WalletUiState())
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun UrgentActionCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            UrgentActionCard(nextPaymentDate = "Oct 15th")
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun ActiveMembershipCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            ActiveMembershipCard(
+                type = "V.I.P",
+                plan = "ELITE ANNUAL",
+                memberId = "KNTC - 9982 - X01",
+                validThru = "AUG 2025",
+                memberSince = "SEP 2023"
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun TransactionItemPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            TransactionItem(
+                title = "Elite Annual Plan",
+                subtitle = "Sep 1, 2023 • UPI",
+                amount = "₹79,999",
+                status = "PAID",
+                isCompleted = true
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun ReminderItemPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            ReminderItem(title = "Payment Due Reminder", subtitle = "Sent via SMS • Oct 1, 2023 • 09:00 AM")
+        }
+    }
+}

@@ -283,3 +283,44 @@ fun AttendanceLogsScreenPreview() {
         )
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun LiveNowCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            LiveNowCard(count = 42)
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun PeakTimeCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            PeakTimeCard(time = "18:00")
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun TotalCheckInsCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            TotalCheckInsCard(count = 128, trend = "+12% from yesterday")
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun ActivityItemPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            ActivityItem(name = "Marcus Thorne", id = "Elite Annual", time = "06:45 AM", status = "ACTIVE")
+            ActivityItem(name = "Elena Rodriguez", id = "Monthly Plan", time = "07:12 AM", status = "OVERDUE", isUrgent = true)
+        }
+    }
+}

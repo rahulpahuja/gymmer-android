@@ -262,3 +262,41 @@ fun WorkoutsScreenPreview() {
         )
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun WorkoutExerciseCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            WorkoutExerciseCard(
+                name = "Barbell Squat",
+                target = "Quads, Glutes",
+                sets = "4",
+                reps = "8-12",
+                tempo = "3-1-2",
+                rest = "90s"
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun StatBoxPreview() {
+    GymmerTheme {
+        Row(modifier = Modifier.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            StatBox(label = "SETS", value = "4", modifier = Modifier.weight(1f))
+            StatBox(label = "REPS", value = "8-12", modifier = Modifier.weight(1f))
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun BuildSessionSectionPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            BuildSessionSection(name = "HYPERTROPHY_A", target = "Targeting: Posterior Chain & Lats • Est. 65min")
+        }
+    }
+}

@@ -218,3 +218,14 @@ fun ExerciseDetailScreenPreview() {
         ExerciseDetailContent(uiState = ExerciseDetailUiState())
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun BulletPointPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            BulletPoint("Keep your back straight throughout the movement")
+            BulletPoint("Common mistake: rounding the back", color = Color.Red.copy(alpha = 0.7f))
+        }
+    }
+}

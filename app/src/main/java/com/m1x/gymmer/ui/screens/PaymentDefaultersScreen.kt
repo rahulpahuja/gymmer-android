@@ -255,3 +255,43 @@ fun PaymentDefaultersScreenPreview() {
         PaymentDefaultersContent(uiState = PaymentDefaultersUiState(), onTabSelected = {})
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun RevenueRiskCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            RevenueRiskCard(amount = 1240.0)
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun ComplianceCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            ComplianceCard(count = 12)
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun DefaulterTabsPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            DefaulterTabs(selectedTab = "CRITICAL (>7 DAYS)", onTabSelected = {})
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun AutomatedRecoveryCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            AutomatedRecoveryCard()
+        }
+    }
+}

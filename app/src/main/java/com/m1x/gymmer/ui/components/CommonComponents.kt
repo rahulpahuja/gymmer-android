@@ -451,20 +451,20 @@ fun ComponentsPreview() {
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             GymSectionHeader(title = "Core Actions", onSeeAllClick = {})
-            
+
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 GymButton(text = "Initiate", onClick = {}, modifier = Modifier.weight(1f))
                 GymSecondaryButton(text = "Manage", onClick = {}, modifier = Modifier.weight(1f))
             }
-            
+
             GymTextField(
-                value = "", 
-                onValueChange = {}, 
-                label = "Trainee Identifier", 
+                value = "",
+                onValueChange = {},
+                label = "Trainee Identifier",
                 placeholder = "trainee@kinetic.com",
                 leadingIcon = Icons.Default.Search
             )
-            
+
             GymSectionHeader(title = "Performance Stats")
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -474,14 +474,14 @@ fun ComponentsPreview() {
                 GymStatItem(label = "Efficiency", value = "92", unit = "%")
                 GymStatItem(label = "Active", value = "12")
             }
-            
+
             GymSectionHeader(title = "Categories")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 GymChip(text = "Strength", isSelected = true, onClick = {})
                 GymChip(text = "Cardio", isSelected = false, onClick = {})
                 GymChip(text = "HIIT", isSelected = false, onClick = {})
             }
-            
+
             GymCard {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -496,5 +496,118 @@ fun ComponentsPreview() {
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun GymTopBarPreview() {
+    GymmerTheme {
+        GymTopBar(title = "KINETIC")
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun GymBottomNavigationPreview() {
+    GymmerTheme {
+        GymBottomNavigation(selectedItem = 0)
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun GymButtonPreview() {
+    GymmerTheme {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            GymButton(text = "Initiate Training", onClick = {})
+            GymSecondaryButton(text = "Save Draft", onClick = {})
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun GymTextFieldPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            GymTextField(
+                value = "",
+                onValueChange = {},
+                label = "Email",
+                placeholder = "athlete@kinetic.com",
+                leadingIcon = Icons.Default.Search
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun GymChipPreview() {
+    GymmerTheme {
+        Row(modifier = Modifier.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            GymChip(text = "Strength", isSelected = true, onClick = {})
+            GymChip(text = "Cardio", isSelected = false, onClick = {})
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun GymStatItemPreview() {
+    GymmerTheme {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            GymStatItem(label = "Sessions", value = "24")
+            GymStatItem(label = "Efficiency", value = "92", unit = "%")
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun GymBadgePreview() {
+    GymmerTheme {
+        Row(modifier = Modifier.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            GymBadge(text = "Active")
+            GymBadge(text = "Overdue", containerColor = Color.Red.copy(alpha = 0.2f), contentColor = Color.Red)
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun GymSectionHeaderPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            GymSectionHeader(title = "Today's Sessions", onSeeAllClick = {})
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun GymCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            GymCard {
+                Text("Card content goes here", color = Color.White)
+                Text("Subtitle text", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun GymDrawerContentPreview() {
+    GymmerTheme {
+        GymDrawerContent(selectedRoute = "dashboard", onRouteSelected = {}, onLogout = {})
     }
 }

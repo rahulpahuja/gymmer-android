@@ -321,3 +321,43 @@ fun BusinessInsightsScreenPreview() {
         BusinessInsightsContent(uiState = BusinessInsightsUiState())
     }
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun AnnualRevenueCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            AnnualRevenueCard(RevenueState())
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun RetentionEngineCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            RetentionEngineCard(RetentionState())
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun PulseItemPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            PulseItem(name = "Downtown Powerhouse", capacity = "84% CAPACITY")
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun ManagementCardPreview() {
+    GymmerTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            ManagementCard(title = "Membership Plans", description = "Adjust pricing tiers, seasonal discounts, and contract terms.")
+        }
+    }
+}

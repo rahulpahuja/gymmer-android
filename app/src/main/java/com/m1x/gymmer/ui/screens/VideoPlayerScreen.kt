@@ -121,3 +121,11 @@ fun VideoPlayerTopBar(
         )
     )
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+fun VideoPlayerTopBarPreview() {
+    GymmerTheme {
+        VideoPlayerTopBar(title = "Chest Exercise 1", onBackClick = {})
+    }
+}
