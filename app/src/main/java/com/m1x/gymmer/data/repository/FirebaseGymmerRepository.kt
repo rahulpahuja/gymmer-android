@@ -17,6 +17,11 @@ class FirebaseGymmerRepository(
     private val registrationDao: RegistrationDao? = null
 ) : IGymmerRepository {
 
+    init {
+        // Enable offline persistence for RTDB to handle connectivity gaps
+        rtdb.setPersistenceEnabled(true)
+    }
+
     override suspend fun login(loginRequest: LoginRequest): User {
         val result = auth.signInWithEmailAndPassword(loginRequest.email!!, loginRequest.password!!).await()
         val firebaseUser = result.user ?: throw Exception("Login failed")
@@ -69,14 +74,7 @@ class FirebaseGymmerRepository(
                 gymId = registerRequest.gymId
             )
             
-            // 2. Store to Firestore (Try-catch as it might not be enabled)
-            try {
-                firestore.collection("users").document(firebaseUser.uid).set(user).await()
-            } catch (e: Exception) {
-                // Ignore Firestore errors if only RTDB is requested
-            }
-
-            // 3. Store to Realtime Database - Flattened for better compatibility
+            // 2. Store to Realtime Database FIRST (since it's more reliable/requested)
             val rtdbUser = mapOf(
                 "id" to user.id.toString(),
                 "name" to user.name,
@@ -86,6 +84,13 @@ class FirebaseGymmerRepository(
                 "gymId" to user.gymId?.toString()
             )
             rtdb.getReference("users").child(firebaseUser.uid).setValue(rtdbUser).await()
+
+            // 3. Store to Firestore (Try-catch as it's failing in logs)
+            try {
+                firestore.collection("users").document(firebaseUser.uid).set(user).await()
+            } catch (e: Exception) {
+                // Ignore Firestore errors to prevent blocking the whole flow
+            }
 
             // If everything succeeded, we can clear the local entry
             // Note: We use the email to identify which one to delete in case of queuing

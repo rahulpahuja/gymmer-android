@@ -104,8 +104,7 @@ class NewMemberOnboardingViewModel(application: Application) : AndroidViewModel(
     fun completeOnboarding(email: String, phone: String, password: String) {
         viewModelScope.launch {
             try {
-                val selectedPlan = uiState.value.membershipPlans.find { it.isSelected }
-                val selectedTrainer = uiState.value.availableTrainers.find { it.isSelected }
+                _uiState.update { it.copy(email = email, password = password) }
                 
                 val request = RegisterRequest(
                     gymId = UUID.fromString("00000000-0000-0000-0000-000000000000"), // Default Gym
@@ -113,13 +112,11 @@ class NewMemberOnboardingViewModel(application: Application) : AndroidViewModel(
                     email = email,
                     phone = phone,
                     password = password,
-                    role = "MEMBER"
+                    role = "TRAINEE"
                 )
                 
                 val user = repository.register(request)
                 logManager.info(LogManager.LogCategory.AUTH, "Registration successful for: ${user.name}")
-                
-                // Further onboarding steps like assigning trainer could go here
             } catch (e: Exception) {
                 logManager.info(LogManager.LogCategory.ERRORS, "Onboarding failed: ${e.message}")
             }

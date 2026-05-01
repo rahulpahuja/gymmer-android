@@ -49,7 +49,7 @@ fun NewMemberOnboardingScreen(
         onPlanSelected = viewModel::selectPlan,
         onTrainerSelected = viewModel::selectTrainer,
         onComplete = {
-            viewModel.completeOnboarding(uiState.athleteName, uiState.email, uiState.password)
+            viewModel.completeOnboarding(uiState.email, uiState.age, uiState.password) // phone is age field for now
             navController.navigate("dashboard") {
                 popUpTo("login") { inclusive = true }
             }
