@@ -42,8 +42,10 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     fun login(onSuccess: (UserRole) -> Unit) {
         val currentState = _uiState.value
+        val email = currentState.email.trim()
+        val password = currentState.password.trim()
         
-        if (currentState.email.isBlank() || currentState.password.isBlank()) {
+        if (email.isBlank() || password.isBlank()) {
             _uiState.update { it.copy(error = "Please fill in all fields") }
             return
         }
@@ -51,7 +53,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             try {
-                val user = repository.login(LoginRequest(currentState.email, currentState.password))
+                val user = repository.login(LoginRequest(email, password))
                 logManager.info(LogManager.LogCategory.LOGIN, "Login successful for ${user.email}")
                 
                 _uiState.update { it.copy(isLoading = false) }
@@ -65,11 +67,18 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 onSuccess(finalRole)
             } catch (e: Exception) {
                 logManager.info(LogManager.LogCategory.ERRORS, "Login failed: ${e.message}")
-                val errorMessage = if (e.message?.contains("no user record", ignoreCase = true) == true) {
+                
+                // Broaden the "User Not Found" detection to cover more Firebase variations
+                val errorMessage = if (
+                    e.message?.contains("no user record", ignoreCase = true) == true || 
+                    e.message?.contains("user-not-found", ignoreCase = true) == true ||
+                    e.message?.contains("invalid identifier", ignoreCase = true) == true
+                ) {
                     "USER_NOT_FOUND"
                 } else {
                     "Login failed: ${e.message}"
                 }
+
                 _uiState.update { it.copy(isLoading = false, error = errorMessage) }
             }
         }

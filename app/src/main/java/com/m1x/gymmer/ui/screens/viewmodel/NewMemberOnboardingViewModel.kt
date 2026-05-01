@@ -110,14 +110,17 @@ class NewMemberOnboardingViewModel(application: Application) : AndroidViewModel(
     fun completeOnboarding(email: String, phone: String, password: String) {
         viewModelScope.launch {
             try {
-                _uiState.update { it.copy(email = email, password = password, isLoading = true) }
+                val trimmedEmail = email.trim()
+                val trimmedPassword = password.trim()
+                
+                _uiState.update { it.copy(email = trimmedEmail, password = trimmedPassword, isLoading = true) }
                 
                 val request = RegisterRequest(
                     gymId = UUID.fromString("00000000-0000-0000-0000-000000000000"), // Default Gym
-                    name = uiState.value.athleteName,
-                    email = email,
-                    phone = phone,
-                    password = password,
+                    name = uiState.value.athleteName.trim(),
+                    email = trimmedEmail,
+                    phone = phone.trim(),
+                    password = trimmedPassword,
                     role = "TRAINEE"
                 )
                 
