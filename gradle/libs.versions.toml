@@ -117,3 +117,4 @@ kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref =
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 google-services = { id = "com.google.gms.google-services", version = "4.4.4" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.6" }
+firebase-analytics = { id = "com.google.firebase.analytics", version = "3.0.6" }
