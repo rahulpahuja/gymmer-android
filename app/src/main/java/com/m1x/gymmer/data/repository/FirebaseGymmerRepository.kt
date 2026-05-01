@@ -1,6 +1,7 @@
 package com.m1x.gymmer.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.m1x.gymmer.data.network.models.*
@@ -9,7 +10,8 @@ import java.util.*
 
 class FirebaseGymmerRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
+    private val rtdb: FirebaseDatabase = FirebaseDatabase.getInstance("https://gymmer-42987-default-rtdb.firebaseio.com/")
 ) : IGymmerRepository {
 
     override suspend fun login(loginRequest: LoginRequest): User {
@@ -275,12 +277,9 @@ class FirebaseGymmerRepository(
     }
 
     override suspend fun getMessages(senderId: UUID, receiverId: UUID): List<Message> {
-        val snapshot = firestore.collection("messages")
-            .whereIn("senderId", listOf(senderId.toString(), receiverId.toString()))
-            .whereIn("receiverId", listOf(senderId.toString(), receiverId.toString()))
-            .orderBy("sentAt", Query.Direction.ASCENDING)
-            .get().await()
-        return snapshot.toObjects(Message::class.java)
+        val chatPath = if (senderId.toString() < receiverId.toString()) "${senderId}_${receiverId}" else "${receiverId}_${senderId}"
+        val snapshot = rtdb.getReference("chats").child(chatPath).get().await()
+        return snapshot.children.mapNotNull { it.getValue(Message::class.java) }
     }
 
     override suspend fun sendMessage(senderId: UUID, receiverId: UUID, content: String): Message {
@@ -291,7 +290,11 @@ class FirebaseGymmerRepository(
             content = content,
             sentAt = Date().toString()
         )
-        firestore.collection("messages").add(message).await()
+        
+        // Using Realtime Database for Chat Messages
+        val chatPath = if (senderId.toString() < receiverId.toString()) "${senderId}_${receiverId}" else "${receiverId}_${senderId}"
+        rtdb.getReference("chats").child(chatPath).push().setValue(message).await()
+
         return message
     }
 

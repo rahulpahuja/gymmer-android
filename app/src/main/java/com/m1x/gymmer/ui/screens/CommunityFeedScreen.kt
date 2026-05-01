@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -80,11 +81,13 @@ fun CommunityFeedScreen(
                 selectedTabIndex = uiState.selectedTab,
                 containerColor = Color.Black,
                 contentColor = LimeGreen,
-                indicator = {
-                    TabRowDefaults.SecondaryIndicator(
-                        modifier = Modifier.tabIndicatorOffset(uiState.selectedTab),
-                        color = LimeGreen
-                    )
+                indicator = { tabPositions ->
+                    if (uiState.selectedTab < tabPositions.size) {
+                        TabRowDefaults.SecondaryIndicator(
+                            modifier = Modifier.tabIndicatorOffset(tabPositions[uiState.selectedTab]),
+                            color = LimeGreen
+                        )
+                    }
                 }
             ) {
                 Tab(

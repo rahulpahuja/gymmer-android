@@ -1,7 +1,7 @@
 # Gymmer API Requirements
 
 This document outlines the API endpoints required to support the Gymmer Android application.
-
+//https://gymmer-42987-default-rtdb.firebaseio.com/
 ## Base URL
 `https://api.gymmer.com/v1`
 

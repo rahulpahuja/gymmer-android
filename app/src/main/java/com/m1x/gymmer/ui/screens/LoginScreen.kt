@@ -144,6 +144,7 @@ fun LoginContent(
                 UserRole.TRAINEE -> stringResource(R.string.login_trainee_title)
                 UserRole.TRAINER -> "Trainer Login"
                 UserRole.BUSINESS -> "Business Login"
+                UserRole.SUPER_USER -> "Super User Login"
             },
             style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Black),
             color = Color.White,
