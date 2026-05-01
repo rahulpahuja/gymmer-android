@@ -2,148 +2,137 @@ package com.m1x.gymmer.data.network
 
 import com.m1x.gymmer.data.network.models.*
 import retrofit2.http.*
-import java.util.UUID
 
 interface ApiService {
+    @POST("auth/register")
+    suspend fun register(@Body registerRequest: RegisterRequest): User
 
-    // Auth
-    @POST("api/auth/register")
-    suspend fun register(@Body request: RegisterRequest): User
+    @POST("auth/login")
+    suspend fun login(@Body loginRequest: LoginRequest): User
 
-    @POST("api/auth/login")
-    suspend fun login(@Body request: LoginRequest): User
+    @POST("auth/refresh")
+    suspend fun refresh(@Body refreshRequest: RefreshRequest): Map<String, String>
 
-    @POST("api/auth/refresh")
-    suspend fun refresh(@Body request: RefreshRequest): Map<String, String>
+    @GET("user/profile")
+    suspend fun getProfile(@Query("userId") userId: String): User
 
-    // User
-    @GET("api/user/profile")
-    suspend fun getProfile(@Query("userId") userId: UUID): User
+    @PUT("user/profile")
+    suspend fun updateProfile(@Query("userId") userId: String, @Body request: UpdateProfileRequest): User
 
-    @PUT("api/user/profile")
-    suspend fun updateProfile(@Query("userId") userId: UUID, @Body request: UpdateProfileRequest): User
+    @POST("user/check-in")
+    suspend fun checkIn(@Query("userId") userId: String): CheckIn
 
-    @POST("api/user/check-in")
-    suspend fun checkIn(@Query("userId") userId: UUID): CheckIn
+    @GET("user/dashboard")
+    suspend fun getDashboard(@Query("userId") userId: String): DashboardData
 
-    @GET("api/user/dashboard")
-    suspend fun getDashboard(@Query("userId") userId: UUID): DashboardData
-
-    // Workouts
-    @POST("api/workouts/log")
+    @POST("workouts/log")
     suspend fun logWorkout(@Body request: LogWorkoutRequest): WorkoutLog
 
-    @GET("api/workouts")
+    @GET("workouts")
     suspend fun listWorkouts(): List<WorkoutPlan>
 
-    @GET("api/workouts/{id}")
-    suspend fun getWorkout(@Path("id") id: UUID): WorkoutPlan
+    @GET("workouts/{id}")
+    suspend fun getWorkout(@Path("id") workoutId: String): WorkoutPlan
 
-    @GET("api/exercises")
+    @GET("exercises")
     suspend fun listExercises(
         @Query("category") category: String? = null,
         @Query("difficulty") difficulty: String? = null
     ): List<Exercise>
 
-    @GET("api/exercises/{id}")
-    suspend fun getExercise(@Path("id") id: UUID): Exercise
+    @GET("exercises/{id}")
+    suspend fun getExercise(@Path("id") exerciseId: String): Exercise
 
-    // Trainers
-    @POST("api/trainers/trainees/{id}/plan")
+    @POST("trainer/trainees/{id}/plan")
     suspend fun assignPlan(
-        @Path("id") traineeId: UUID,
-        @Query("trainerId") trainerId: UUID,
+        @Path("id") traineeId: String,
+        @Query("trainerId") trainerId: String,
         @Body request: AssignPlanRequest
     ): TraineePlan
 
-    @POST("api/trainers/assign")
+    @POST("gyms/{gymId}/trainers/{trainerId}/assign/{traineeId}")
     suspend fun assignTrainer(
-        @Query("trainerId") trainerId: UUID,
-        @Query("traineeId") traineeId: UUID,
-        @Query("gymId") gymId: UUID
+        @Path("gymId") gymId: String,
+        @Path("trainerId") trainerId: String,
+        @Path("traineeId") traineeId: String
     ): TrainerAssignment
 
-    @GET("api/trainers/{trainerId}/assignments")
-    suspend fun getAssignments(@Path("trainerId") trainerId: UUID): List<TrainerAssignment>
+    @GET("trainer/assignments")
+    suspend fun getAssignments(@Query("trainerId") trainerId: String): List<TrainerAssignment>
 
-    @GET("api/trainers/trainees")
-    suspend fun getTrainees(@Query("trainerId") trainerId: UUID): List<User>
+    @GET("trainer/trainees")
+    suspend fun getTrainees(@Query("trainerId") trainerId: String): List<User>
 
-    @GET("api/trainers/trainees/{id}/progress")
-    suspend fun getTraineeProgress(@Path("id") traineeId: UUID): TraineeProgress
+    @GET("trainer/trainees/{id}/progress")
+    suspend fun getTraineeProgress(@Path("id") traineeId: String): TraineeProgress
 
-    @GET("api/trainers/gym/{gymId}")
-    suspend fun getTrainersByGym(@Path("gymId") gymId: UUID): List<User>
+    @GET("gyms/{gymId}/trainers")
+    suspend fun getTrainersByGym(@Path("gymId") gymId: String): List<User>
 
-    @GET("api/trainers/dashboard")
-    suspend fun getTrainerDashboard(@Query("trainerId") trainerId: UUID): TrainerDashboardData
+    @GET("trainer/dashboard")
+    suspend fun getTrainerDashboard(@Query("trainerId") trainerId: String): TrainerDashboardData
 
-    @GET("api/trainers/all")
+    @GET("trainers")
     suspend fun getAllTrainers(): List<User>
 
-    @DELETE("api/trainers/assignment/{id}")
-    suspend fun deleteAssignment(@Path("id") assignmentId: UUID)
+    @DELETE("trainer/assignments/{id}")
+    suspend fun deleteAssignment(@Path("id") assignmentId: String)
 
-    // Nutrition
-    @POST("api/nutrition/log")
+    @POST("nutrition/log")
     suspend fun logNutrition(@Body request: LogNutritionRequest): NutritionLog
 
-    @GET("api/nutrition/today")
-    suspend fun getTodayNutrition(@Query("userId") userId: UUID): MealPlan
+    @GET("nutrition/today")
+    suspend fun getTodayNutrition(@Query("userId") userId: String): MealPlan
 
-    // Community
-    @POST("api/community/posts")
+    @POST("community/posts")
     suspend fun createPost(@Body request: CreatePostRequest): Post
 
-    @POST("api/community/posts/{id}/like")
-    suspend fun toggleLike(@Path("id") postId: UUID, @Query("userId") userId: UUID): Map<String, Any>
+    @POST("community/posts/{postId}/like")
+    suspend fun toggleLike(@Path("postId") postId: String, @Query("userId") userId: String): Map<String, Any>
 
-    @GET("api/community/posts/{id}/comments")
-    suspend fun getComments(@Path("id") postId: UUID): List<PostComment>
+    @GET("community/posts/{postId}/comments")
+    suspend fun getComments(@Path("postId") postId: String): List<PostComment>
 
-    @POST("api/community/posts/{id}/comments")
-    suspend fun addComment(@Path("id") postId: UUID, @Body request: AddCommentRequest): PostComment
+    @POST("community/posts/{postId}/comments")
+    suspend fun addComment(@Path("postId") postId: String, @Body request: AddCommentRequest): PostComment
 
-    @GET("api/community/leaderboard")
+    @GET("community/leaderboard")
     suspend fun getLeaderboard(): List<LeaderboardEntry>
 
-    @GET("api/community/feed")
+    @GET("community/feed")
     suspend fun getFeed(): List<Post>
 
-    // Chat
-    @GET("api/chat/{userId}/messages")
+    @GET("chat/{receiverId}/messages")
     suspend fun getMessages(
-        @Path("userId") otherUserId: UUID,
-        @Query("currentUserId") currentUserId: UUID
+        @Path("receiverId") receiverId: String,
+        @Query("senderId") senderId: String
     ): List<Message>
 
-    @POST("api/chat/{userId}/messages")
+    @POST("chat/{receiverId}/messages")
     suspend fun sendMessage(
-        @Path("userId") receiverId: UUID,
-        @Query("senderId") senderId: UUID,
+        @Path("receiverId") receiverId: String,
+        @Query("senderId") senderId: String,
         @Body request: SendMessageRequest
     ): Message
 
-    @GET("api/chat/conversations")
-    suspend fun getConversations(@Query("userId") userId: UUID): List<ConversationSummary>
+    @GET("chat/conversations")
+    suspend fun getConversations(@Query("userId") userId: String): List<ConversationSummary>
 
-    // Business
-    @GET("api/business/revenue-kinetics")
+    @GET("business/revenue-kinetics")
     suspend fun getRevenueKinetics(): List<RevenueDataPoint>
 
-    @GET("api/business/pulse")
+    @GET("business/pulse")
     suspend fun getPulse(): List<GymPulse>
 
-    @GET("api/business/insights")
+    @GET("business/insights")
     suspend fun getBusinessInsights(): BusinessInsights
 
-    @GET("api/business/defaulters")
+    @GET("business/defaulters")
     suspend fun getDefaulters(): List<Defaulter>
 
-    // Hello
-    @GET("api/hello")
+    @GET("hello")
     suspend fun hello(): Map<String, String>
 
-    @GET("api/greet/{name}")
-    suspend fun greet(@Path("name") name: String): Map<String, String>
+    @GET("greet")
+    suspend fun greet(@Query("name") name: String): Map<String, String>
 }

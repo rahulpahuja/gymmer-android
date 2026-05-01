@@ -5,7 +5,6 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.m1x.gymmer.GymmerApplication
 import com.m1x.gymmer.data.network.models.RegisterRequest
-import java.util.UUID
 
 class RegistrationSyncWorker(
     appContext: Context,
@@ -25,7 +24,7 @@ class RegistrationSyncWorker(
             try {
                 repository.register(
                     RegisterRequest(
-                        gymId = reg.gymId?.let { UUID.fromString(it) },
+                        gymId = reg.gymId,
                         name = reg.name,
                         email = reg.email,
                         phone = reg.phone,

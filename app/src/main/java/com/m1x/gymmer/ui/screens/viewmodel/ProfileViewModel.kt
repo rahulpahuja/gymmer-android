@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
     private val gymmerApp = application as GymmerApplication
@@ -21,7 +20,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val logManager = gymmerApp.logManager
 
     // Mock User ID - in a real app, this would come from a SessionManager
-    private val currentUserId = UUID.fromString("00000000-0000-0000-0000-000000000000")
+    private val currentUserId = "00000000-0000-0000-0000-000000000000"
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()

@@ -8,8 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,12 +37,23 @@ fun NutritionScreen(
     viewModel: NutritionViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var showAddMealDialog by remember { mutableStateOf(false) }
+
+    if (showAddMealDialog) {
+        AddMealDialog(
+            onDismiss = { showAddMealDialog = false },
+            onConfirm = { name, calories, protein, carbs, fat ->
+                viewModel.addMeal(name, calories, protein, carbs, fat)
+                showAddMealDialog = false
+            }
+        )
+    }
 
     Scaffold(
         topBar = { GymTopBar(title = "NUTRITION", onMenuClick = onMenuClick) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* Add meal logic */ },
+                onClick = { showAddMealDialog = true },
                 containerColor = LimeGreen,
                 contentColor = Color.Black
             ) {
@@ -178,6 +188,82 @@ fun MealCard(meal: MealState) {
             }
         }
     }
+}
+
+@Composable
+fun AddMealDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String, Int, Float, Float, Float) -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+    var calories by remember { mutableStateOf("") }
+    var protein by remember { mutableStateOf("") }
+    var carbs by remember { mutableStateOf("") }
+    var fat by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("ADD MEAL", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Black)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Meal Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = calories,
+                    onValueChange = { if (it.all { char -> char.isDigit() }) calories = it },
+                    label = { Text("Calories (kcal)") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = protein,
+                        onValueChange = { protein = it },
+                        label = { Text("Protein (g)") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = carbs,
+                        onValueChange = { carbs = it },
+                        label = { Text("Carbs (g)") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = fat,
+                        onValueChange = { fat = it },
+                        label = { Text("Fats (g)") },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirm(
+                        name.ifBlank { "Meal" },
+                        calories.toIntOrNull() ?: 0,
+                        protein.toFloatOrNull() ?: 0f,
+                        carbs.toFloatOrNull() ?: 0f,
+                        fat.toFloatOrNull() ?: 0f
+                    )
+                }
+            ) {
+                Text("ADD", color = LimeGreen, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("CANCEL", color = Color.Gray)
+            }
+        },
+        containerColor = Color.DarkGray,
+        titleContentColor = Color.White,
+        textContentColor = Color.LightGray
+    )
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFF000000)

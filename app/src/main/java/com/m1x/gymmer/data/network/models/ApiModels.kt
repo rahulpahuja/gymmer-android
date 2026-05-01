@@ -1,7 +1,6 @@
 package com.m1x.gymmer.data.network.models
 
 import com.google.gson.annotations.SerializedName
-import java.util.UUID
 
 data class UpdateProfileRequest(
     val name: String? = null,
@@ -12,8 +11,8 @@ data class UpdateProfileRequest(
 )
 
 data class User(
-    val id: UUID? = null,
-    val gymId: UUID? = null,
+    val id: String? = null,
+    val gymId: String? = null,
     val name: String? = null,
     val email: String? = null,
     val phone: String? = null,
@@ -24,87 +23,87 @@ data class User(
 )
 
 data class LogWorkoutRequest(
-    val userId: UUID? = null,
-    val workoutPlanId: UUID? = null,
+    val userId: String? = null,
+    val workoutPlanId: String? = null,
     val durationMinutes: Int? = null,
     val notes: String? = null
 )
 
 data class WorkoutLog(
-    val id: UUID? = null,
-    val userId: UUID? = null,
-    val workoutPlanId: UUID? = null,
+    val id: String? = null,
+    val userId: String? = null,
+    val workoutPlanId: String? = null,
     val durationMinutes: Int? = null,
     val notes: String? = null,
     val loggedAt: String? = null
 )
 
 data class CheckIn(
-    val id: UUID? = null,
-    val userId: UUID? = null,
-    val gymId: UUID? = null,
+    val id: String? = null,
+    val userId: String? = null,
+    val gymId: String? = null,
     val checkedInAt: String? = null
 )
 
 data class AssignPlanRequest(
     val planType: String? = null,
-    val planId: UUID? = null
+    val planId: String? = null
 )
 
 data class TraineePlan(
-    val id: UUID? = null,
-    val traineeId: UUID? = null,
-    val trainerId: UUID? = null,
+    val id: String? = null,
+    val traineeId: String? = null,
+    val trainerId: String? = null,
     val planType: String? = null,
-    val planId: UUID? = null,
+    val planId: String? = null,
     val assignedAt: String? = null
 )
 
 data class TrainerAssignment(
-    val id: UUID? = null,
-    val trainerId: UUID? = null,
-    val traineeId: UUID? = null,
-    val gymId: UUID? = null,
+    val id: String? = null,
+    val trainerId: String? = null,
+    val traineeId: String? = null,
+    val gymId: String? = null,
     val createdAt: String? = null
 )
 
 data class LogNutritionRequest(
-    val userId: UUID? = null,
+    val userId: String? = null,
     val type: String? = null,
     val amount: Double? = null
 )
 
 data class NutritionLog(
-    val id: UUID? = null,
-    val userId: UUID? = null,
+    val id: String? = null,
+    val userId: String? = null,
     val type: String? = null,
     val amount: Double? = null,
     val loggedAt: String? = null
 )
 
 data class CreatePostRequest(
-    val authorId: UUID? = null,
+    val authorId: String? = null,
     val content: String? = null,
     val imageUrl: String? = null
 )
 
 data class Post(
-    val id: UUID? = null,
-    val authorId: UUID? = null,
+    val id: String? = null,
+    val authorId: String? = null,
     val content: String? = null,
     val imageUrl: String? = null,
     val createdAt: String? = null
 )
 
 data class AddCommentRequest(
-    val authorId: UUID? = null,
+    val authorId: String? = null,
     val content: String? = null
 )
 
 data class PostComment(
-    val id: UUID? = null,
-    val postId: UUID? = null,
-    val authorId: UUID? = null,
+    val id: String? = null,
+    val postId: String? = null,
+    val authorId: String? = null,
     val content: String? = null,
     val createdAt: String? = null
 )
@@ -114,15 +113,15 @@ data class SendMessageRequest(
 )
 
 data class Message(
-    val id: UUID? = null,
-    val senderId: UUID? = null,
-    val receiverId: UUID? = null,
+    val id: String? = null,
+    val senderId: String? = null,
+    val receiverId: String? = null,
     val content: String? = null,
     val sentAt: String? = null
 )
 
 data class RegisterRequest(
-    val gymId: UUID? = null,
+    val gymId: String? = null,
     val name: String? = null,
     val email: String? = null,
     val phone: String? = null,
@@ -140,11 +139,11 @@ data class LoginRequest(
 )
 
 data class WorkoutPlan(
-    val id: UUID? = null,
+    val id: String? = null,
     val name: String? = null,
     val description: String? = null,
     val difficulty: String? = null,
-    val gymId: UUID? = null
+    val gymId: String? = null
 )
 
 data class DashboardData(
@@ -166,15 +165,15 @@ data class TrainerDashboardData(
 )
 
 data class MealPlan(
-    val id: UUID? = null,
-    val userId: UUID? = null,
+    val id: String? = null,
+    val userId: String? = null,
     val date: String? = null,
     val meals: String? = null,
     val totalCalories: Int? = null
 )
 
 data class Exercise(
-    val id: UUID? = null,
+    val id: String? = null,
     val name: String? = null,
     val category: String? = null,
     val difficulty: String? = null,
@@ -183,13 +182,13 @@ data class Exercise(
 )
 
 data class LeaderboardEntry(
-    val userId: UUID? = null,
+    val userId: String? = null,
     val name: String? = null,
     val checkInCount: Int? = null
 )
 
 data class ConversationSummary(
-    val otherUserId: UUID? = null,
+    val otherUserId: String? = null,
     val lastMessage: Message? = null
 )
 
@@ -199,7 +198,7 @@ data class RevenueDataPoint(
 )
 
 data class GymPulse(
-    val gymId: UUID? = null,
+    val gymId: String? = null,
     val gymName: String? = null,
     val currentCapacity: Int? = null,
     val activeSessions: Int? = null
@@ -212,7 +211,7 @@ data class BusinessInsights(
 )
 
 data class Defaulter(
-    val userId: UUID? = null,
+    val userId: String? = null,
     val name: String? = null,
     val email: String? = null,
     val amountDue: Double? = null

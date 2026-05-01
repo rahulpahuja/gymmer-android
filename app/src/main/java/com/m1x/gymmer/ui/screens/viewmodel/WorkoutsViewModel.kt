@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class WorkoutsViewModel(application: Application) : AndroidViewModel(application) {
     private val gymmerApp = application as GymmerApplication
@@ -21,7 +20,7 @@ class WorkoutsViewModel(application: Application) : AndroidViewModel(application
     private val logManager = gymmerApp.logManager
 
     // Mock Trainer ID - in a real app, this would come from a SessionManager
-    private val trainerId = UUID.fromString("11111111-1111-1111-1111-111111111111")
+    private val trainerId = "11111111-1111-1111-1111-111111111111"
 
     private val _uiState = MutableStateFlow(WorkoutsUiState())
     val uiState: StateFlow<WorkoutsUiState> = _uiState.asStateFlow()
@@ -60,7 +59,8 @@ class WorkoutsViewModel(application: Application) : AndroidViewModel(application
                 val plans = repository.listWorkouts()
                 // For now, let's just use the first plan's ID if available
                 if (plans.isNotEmpty()) {
-                    val fullPlan = repository.getWorkout(plans.first().id ?: UUID.randomUUID())
+                    val firstPlanId = plans.first().id ?: "00000000-0000-0000-0000-000000000000"
+                    val fullPlan = repository.getWorkout(firstPlanId)
                     // Mapping to WorkoutExerciseState - assuming some defaults as Backend is simple
                     _uiState.update { state ->
                         state.copy(

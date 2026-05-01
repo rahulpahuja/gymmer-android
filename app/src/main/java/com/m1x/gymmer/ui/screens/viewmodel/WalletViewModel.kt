@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class WalletViewModel(application: Application) : AndroidViewModel(application) {
     private val gymmerApp = application as GymmerApplication
@@ -19,7 +18,7 @@ class WalletViewModel(application: Application) : AndroidViewModel(application) 
     private val logManager = gymmerApp.logManager
 
     // Mock User ID
-    private val currentUserId = UUID.fromString("00000000-0000-0000-0000-000000000000")
+    private val currentUserId = "00000000-0000-0000-0000-000000000000"
 
     private val _uiState = MutableStateFlow(WalletUiState())
     val uiState: StateFlow<WalletUiState> = _uiState.asStateFlow()

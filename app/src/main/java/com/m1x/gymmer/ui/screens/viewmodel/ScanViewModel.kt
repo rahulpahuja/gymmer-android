@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class ScanViewModel(application: Application) : AndroidViewModel(application) {
     private val gymmerApp = application as GymmerApplication
@@ -30,11 +29,10 @@ class ScanViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             _uiState.update { it.copy(scanningStatus = ScanningStatus.SCANNING) }
             try {
-                // Assuming QR content is the User ID UUID
-                val userId = UUID.fromString(qrContent)
-                val checkIn = repository.checkIn(userId)
+                // Assuming QR content is the User ID
+                val checkIn = repository.checkIn(qrContent)
                 
-                logManager.info(LogManager.LogCategory.SCAN, "Check-in successful for user: $userId at ${checkIn.checkedInAt}")
+                logManager.info(LogManager.LogCategory.SCAN, "Check-in successful for user: $qrContent at ${checkIn.checkedInAt}")
                 
                 _uiState.update { 
                     it.copy(

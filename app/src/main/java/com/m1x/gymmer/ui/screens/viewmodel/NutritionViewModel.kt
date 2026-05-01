@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.m1x.gymmer.GymmerApplication
+import com.m1x.gymmer.data.network.models.LogNutritionRequest
 import com.m1x.gymmer.data.utils.LogManager
 import com.m1x.gymmer.ui.screens.state.FoodItemState
 import com.m1x.gymmer.ui.screens.state.MealState
@@ -13,7 +14,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class NutritionViewModel(application: Application) : AndroidViewModel(application) {
     private val gymmerApp = application as GymmerApplication
@@ -21,7 +21,7 @@ class NutritionViewModel(application: Application) : AndroidViewModel(applicatio
     private val logManager = gymmerApp.logManager
 
     // Mock User ID - in a real app, this would come from a SessionManager
-    private val currentUserId = UUID.fromString("00000000-0000-0000-0000-000000000000")
+    private val currentUserId = "00000000-0000-0000-0000-000000000000"
 
     private val _uiState = MutableStateFlow(NutritionUiState())
     val uiState: StateFlow<NutritionUiState> = _uiState.asStateFlow()
@@ -59,6 +59,43 @@ class NutritionViewModel(application: Application) : AndroidViewModel(applicatio
                 }
             } catch (e: Exception) {
                 logManager.info(LogManager.LogCategory.ERRORS, "Failed to load nutrition: ${e.message}")
+            }
+        }
+    }
+
+    fun addMeal(name: String, calories: Int, protein: Float, carbs: Float, fat: Float) {
+        viewModelScope.launch {
+            try {
+                // Log nutrition using the existing repository method
+                repository.logNutrition(
+                    LogNutritionRequest(
+                        userId = currentUserId,
+                        type = name,
+                        amount = calories.toDouble()
+                    )
+                )
+
+                // Update local UI state
+                _uiState.update { state ->
+                    val newMeal = MealState(
+                        id = System.currentTimeMillis(),
+                        name = name,
+                        calories = calories,
+                        protein = protein,
+                        carbs = carbs,
+                        fat = fat,
+                        items = emptyList()
+                    )
+                    state.copy(
+                        consumedCalories = state.consumedCalories + calories,
+                        consumedProtein = state.consumedProtein + protein,
+                        consumedCarbs = state.consumedCarbs + carbs,
+                        consumedFat = state.consumedFat + fat,
+                        meals = state.meals + newMeal
+                    )
+                }
+            } catch (e: Exception) {
+                logManager.info(LogManager.LogCategory.ERRORS, "Failed to add meal: ${e.message}")
             }
         }
     }

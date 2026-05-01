@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class NewMemberOnboardingViewModel(application: Application) : AndroidViewModel(application) {
     private val gymmerApp = application as GymmerApplication
@@ -116,7 +115,7 @@ class NewMemberOnboardingViewModel(application: Application) : AndroidViewModel(
                 _uiState.update { it.copy(email = trimmedEmail, password = trimmedPassword, isLoading = true) }
                 
                 val request = RegisterRequest(
-                    gymId = UUID.fromString("00000000-0000-0000-0000-000000000000"), // Default Gym
+                    gymId = "00000000-0000-0000-0000-000000000000", // Default Gym
                     name = uiState.value.athleteName.trim(),
                     email = trimmedEmail,
                     phone = phone.trim(),

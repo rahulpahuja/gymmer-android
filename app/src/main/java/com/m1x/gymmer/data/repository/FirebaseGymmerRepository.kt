@@ -22,7 +22,7 @@ class FirebaseGymmerRepository(
     init {
         // Enable offline persistence for RTDB to handle connectivity gaps
         rtdb.setPersistenceEnabled(true)
-        val options = com.google.firebase.FirebaseApp.getInstance().options
+        val options = FirebaseApp.getInstance().options
         Log.d("FIREBASE_DEBUG", "Connected to Project: ${options.projectId}")
         Log.d("FIREBASE_DEBUG", "RTDB URL: ${rtdb.reference.toString()}")
     }
@@ -35,21 +35,21 @@ class FirebaseGymmerRepository(
         val rtdbSnapshot = rtdb.getReference("users").child(firebaseUser.uid).get().await()
         if (rtdbSnapshot.exists()) {
             return User(
-                id = UUID.fromString(rtdbSnapshot.child("id").value?.toString() ?: firebaseUser.uid),
+                id = rtdbSnapshot.child("id").value?.toString() ?: firebaseUser.uid,
                 name = rtdbSnapshot.child("name").value?.toString(),
                 email = rtdbSnapshot.child("email").value?.toString(),
                 phone = rtdbSnapshot.child("phone").value?.toString(),
                 role = rtdbSnapshot.child("role").value?.toString(),
-                gymId = rtdbSnapshot.child("gymId").value?.toString()?.let { UUID.fromString(it) }
+                gymId = rtdbSnapshot.child("gymId").value?.toString()
             )
         }
 
         // Fallback to Firestore
         try {
             val doc = firestore.collection("users").document(firebaseUser.uid).get().await()
-            return doc.toObject(User::class.java) ?: User(id = UUID.fromString(firebaseUser.uid), email = firebaseUser.email)
+            return doc.toObject(User::class.java) ?: User(id = firebaseUser.uid, email = firebaseUser.email)
         } catch (e: Exception) {
-            return User(id = UUID.fromString(firebaseUser.uid), email = firebaseUser.email)
+            return User(id = firebaseUser.uid, email = firebaseUser.email)
         }
     }
 
@@ -58,7 +58,7 @@ class FirebaseGymmerRepository(
         // 1. Store to local DB first for safety/offline queuing
         registrationDao?.insertRegistration(
             RegistrationEntity(
-                gymId = registerRequest.gymId?.toString(),
+                gymId = registerRequest.gymId,
                 name = registerRequest.name,
                 email = registerRequest.email,
                 phone = registerRequest.phone,
@@ -72,7 +72,7 @@ class FirebaseGymmerRepository(
             val firebaseUser = result.user ?: throw Exception("Registration failed")
             
             val user = User(
-                id = UUID.randomUUID(),
+                id = firebaseUser.uid,
                 name = registerRequest.name,
                 email = registerRequest.email,
                 phone = registerRequest.phone,
@@ -82,12 +82,12 @@ class FirebaseGymmerRepository(
             
             // 2. Store to Realtime Database FIRST (since it's more reliable/requested)
             val rtdbUser = mapOf(
-                "id" to user.id.toString(),
+                "id" to user.id,
                 "name" to user.name,
                 "email" to user.email,
                 "phone" to user.phone,
                 "role" to user.role,
-                "gymId" to user.gymId?.toString()
+                "gymId" to user.gymId
             )
             val userPath = "users/${firebaseUser.uid}"
             Log.d("FIREBASE_DEBUG", "Attempting RTDB write to: $userPath")
@@ -107,31 +107,38 @@ class FirebaseGymmerRepository(
             }
 
             // If everything succeeded, we can clear the local entry
-            // Note: We use the email to identify which one to delete in case of queuing
             registrationDao?.getPendingRegistrations()?.find { it.email == registerRequest.email }?.let {
                 registrationDao.deleteRegistration(it)
             }
             
             return user
         } catch (e: Exception) {
-            // If network fails, we've already stored in local DB. 
-            // The background sync worker (to be implemented) would handle retrying.
             throw e 
         }
     }
 
     override suspend fun refresh(refreshRequest: RefreshRequest): Map<String, String> {
-        // Firebase handles token refresh automatically
         return mapOf("status" to "handled_by_firebase")
     }
 
-    override suspend fun getProfile(userId: UUID): User {
-        val doc = firestore.collection("users").document(userId.toString()).get().await()
+    override suspend fun getProfile(userId: String): User {
+        val rtdbSnapshot = rtdb.getReference("users").child(userId).get().await()
+        if (rtdbSnapshot.exists()) {
+            return User(
+                id = rtdbSnapshot.child("id").value?.toString() ?: userId,
+                name = rtdbSnapshot.child("name").value?.toString(),
+                email = rtdbSnapshot.child("email").value?.toString(),
+                phone = rtdbSnapshot.child("phone").value?.toString(),
+                role = rtdbSnapshot.child("role").value?.toString(),
+                gymId = rtdbSnapshot.child("gymId").value?.toString()
+            )
+        }
+        val doc = firestore.collection("users").document(userId).get().await()
         return doc.toObject(User::class.java) ?: throw Exception("User not found")
     }
 
-    override suspend fun updateProfile(userId: UUID, request: UpdateProfileRequest): User {
-        val userRef = firestore.collection("users").document(userId.toString())
+    override suspend fun updateProfile(userId: String, request: UpdateProfileRequest): User {
+        val userRef = firestore.collection("users").document(userId)
         val updates = mutableMapOf<String, Any?>()
         request.name?.let { updates["name"] = it }
         request.phone?.let { updates["phone"] = it }
@@ -140,12 +147,16 @@ class FirebaseGymmerRepository(
         request.goals?.let { updates["goals"] = it }
         
         userRef.update(updates).await()
+        
+        // Also update RTDB
+        rtdb.getReference("users").child(userId).updateChildren(updates).await()
+        
         return getProfile(userId)
     }
 
-    override suspend fun checkIn(userId: UUID): CheckIn {
+    override suspend fun checkIn(userId: String): CheckIn {
         val checkIn = CheckIn(
-            id = UUID.randomUUID(),
+            id = UUID.randomUUID().toString(),
             userId = userId,
             checkedInAt = Date().toString()
         )
@@ -153,10 +164,10 @@ class FirebaseGymmerRepository(
         return checkIn
     }
 
-    override suspend fun getDashboard(userId: UUID): DashboardData {
+    override suspend fun getDashboard(userId: String): DashboardData {
         val user = getProfile(userId)
         val checkInQuery = firestore.collection("check_ins")
-            .whereEqualTo("userId", userId.toString())
+            .whereEqualTo("userId", userId)
             .orderBy("checkedInAt", Query.Direction.DESCENDING)
             .limit(1)
             .get().await()
@@ -166,13 +177,13 @@ class FirebaseGymmerRepository(
         return DashboardData(
             user = user,
             todayCheckIn = lastCheckIn,
-            activeSessionCount = 5 // Placeholder
+            activeSessionCount = 5 
         )
     }
 
     override suspend fun logWorkout(request: LogWorkoutRequest): WorkoutLog {
         val log = WorkoutLog(
-            id = UUID.randomUUID(),
+            id = UUID.randomUUID().toString(),
             userId = request.userId,
             workoutPlanId = request.workoutPlanId,
             durationMinutes = request.durationMinutes,
@@ -188,8 +199,8 @@ class FirebaseGymmerRepository(
         return snapshot.toObjects(WorkoutPlan::class.java)
     }
 
-    override suspend fun getWorkout(workoutId: UUID): WorkoutPlan {
-        val doc = firestore.collection("workouts").document(workoutId.toString()).get().await()
+    override suspend fun getWorkout(workoutId: String): WorkoutPlan {
+        val doc = firestore.collection("workouts").document(workoutId).get().await()
         return doc.toObject(WorkoutPlan::class.java) ?: throw Exception("Workout not found")
     }
 
@@ -202,14 +213,14 @@ class FirebaseGymmerRepository(
         return snapshot.toObjects(Exercise::class.java)
     }
 
-    override suspend fun getExercise(exerciseId: UUID): Exercise {
-        val doc = firestore.collection("exercises").document(exerciseId.toString()).get().await()
+    override suspend fun getExercise(exerciseId: String): Exercise {
+        val doc = firestore.collection("exercises").document(exerciseId).get().await()
         return doc.toObject(Exercise::class.java) ?: throw Exception("Exercise not found")
     }
 
-    override suspend fun assignPlan(trainerId: UUID, traineeId: UUID, request: AssignPlanRequest): TraineePlan {
+    override suspend fun assignPlan(trainerId: String, traineeId: String, request: AssignPlanRequest): TraineePlan {
         val plan = TraineePlan(
-            id = UUID.randomUUID(),
+            id = UUID.randomUUID().toString(),
             traineeId = traineeId,
             trainerId = trainerId,
             planType = request.planType,
@@ -220,9 +231,9 @@ class FirebaseGymmerRepository(
         return plan
     }
 
-    override suspend fun assignTrainer(gymId: UUID, trainerId: UUID, traineeId: UUID): TrainerAssignment {
+    override suspend fun assignTrainer(gymId: String, trainerId: String, traineeId: String): TrainerAssignment {
         val assignment = TrainerAssignment(
-            id = UUID.randomUUID(),
+            id = UUID.randomUUID().toString(),
             trainerId = trainerId,
             traineeId = traineeId,
             gymId = gymId,
@@ -232,14 +243,14 @@ class FirebaseGymmerRepository(
         return assignment
     }
 
-    override suspend fun getAssignments(trainerId: UUID): List<TrainerAssignment> {
+    override suspend fun getAssignments(trainerId: String): List<TrainerAssignment> {
         val snapshot = firestore.collection("trainer_assignments")
-            .whereEqualTo("trainerId", trainerId.toString())
+            .whereEqualTo("trainerId", trainerId)
             .get().await()
         return snapshot.toObjects(TrainerAssignment::class.java)
     }
 
-    override suspend fun getTrainees(trainerId: UUID): List<User> {
+    override suspend fun getTrainees(trainerId: String): List<User> {
         val assignments = getAssignments(trainerId)
         val traineeIds = assignments.map { it.traineeId.toString() }
         if (traineeIds.isEmpty()) return emptyList()
@@ -250,28 +261,28 @@ class FirebaseGymmerRepository(
         return snapshot.toObjects(User::class.java)
     }
 
-    override suspend fun getTraineeProgress(traineeId: UUID): TraineeProgress {
+    override suspend fun getTraineeProgress(traineeId: String): TraineeProgress {
         val trainee = getProfile(traineeId)
         val checkIns = firestore.collection("check_ins")
-            .whereEqualTo("userId", traineeId.toString())
+            .whereEqualTo("userId", traineeId)
             .get().await().toObjects(CheckIn::class.java)
         
         val logs = firestore.collection("workout_logs")
-            .whereEqualTo("userId", traineeId.toString())
+            .whereEqualTo("userId", traineeId)
             .get().await().toObjects(WorkoutLog::class.java)
             
         return TraineeProgress(trainee, checkIns, logs)
     }
 
-    override suspend fun getTrainersByGym(gymId: UUID): List<User> {
+    override suspend fun getTrainersByGym(gymId: String): List<User> {
         val snapshot = firestore.collection("users")
-            .whereEqualTo("gymId", gymId.toString())
+            .whereEqualTo("gymId", gymId)
             .whereEqualTo("role", "TRAINER")
             .get().await()
         return snapshot.toObjects(User::class.java)
     }
 
-    override suspend fun getTrainerDashboard(trainerId: UUID): TrainerDashboardData {
+    override suspend fun getTrainerDashboard(trainerId: String): TrainerDashboardData {
         val trainer = getProfile(trainerId)
         val trainees = getTrainees(trainerId)
         return TrainerDashboardData(trainer, trainees.size, trainees)
@@ -284,13 +295,13 @@ class FirebaseGymmerRepository(
         return snapshot.toObjects(User::class.java)
     }
 
-    override suspend fun deleteAssignment(assignmentId: UUID) {
-        firestore.collection("trainer_assignments").document(assignmentId.toString()).delete().await()
+    override suspend fun deleteAssignment(assignmentId: String) {
+        firestore.collection("trainer_assignments").document(assignmentId).delete().await()
     }
 
     override suspend fun logNutrition(request: LogNutritionRequest): NutritionLog {
         val log = NutritionLog(
-            id = UUID.randomUUID(),
+            id = UUID.randomUUID().toString(),
             userId = request.userId,
             type = request.type,
             amount = request.amount,
@@ -300,9 +311,9 @@ class FirebaseGymmerRepository(
         return log
     }
 
-    override suspend fun getTodayNutrition(userId: UUID): MealPlan {
+    override suspend fun getTodayNutrition(userId: String): MealPlan {
         val snapshot = firestore.collection("meal_plans")
-            .whereEqualTo("userId", userId.toString())
+            .whereEqualTo("userId", userId)
             .limit(1)
             .get().await()
         return snapshot.toObjects(MealPlan::class.java).firstOrNull() ?: throw Exception("No meal plan found")
@@ -310,7 +321,7 @@ class FirebaseGymmerRepository(
 
     override suspend fun createPost(request: CreatePostRequest): Post {
         val post = Post(
-            id = UUID.randomUUID(),
+            id = UUID.randomUUID().toString(),
             authorId = request.authorId,
             content = request.content,
             imageUrl = request.imageUrl,
@@ -320,21 +331,20 @@ class FirebaseGymmerRepository(
         return post
     }
 
-    override suspend fun toggleLike(postId: UUID, userId: UUID): Map<String, Any> {
-        // Complex logic for toggle, simplified here
+    override suspend fun toggleLike(postId: String, userId: String): Map<String, Any> {
         return mapOf("status" to "liked")
     }
 
-    override suspend fun getComments(postId: UUID): List<PostComment> {
+    override suspend fun getComments(postId: String): List<PostComment> {
         val snapshot = firestore.collection("comments")
-            .whereEqualTo("postId", postId.toString())
+            .whereEqualTo("postId", postId)
             .get().await()
         return snapshot.toObjects(PostComment::class.java)
     }
 
-    override suspend fun addComment(postId: UUID, request: AddCommentRequest): PostComment {
+    override suspend fun addComment(postId: String, request: AddCommentRequest): PostComment {
         val comment = PostComment(
-            id = UUID.randomUUID(),
+            id = UUID.randomUUID().toString(),
             postId = postId,
             authorId = request.authorId,
             content = request.content,
@@ -356,30 +366,26 @@ class FirebaseGymmerRepository(
         return snapshot.toObjects(Post::class.java)
     }
 
-    override suspend fun getMessages(senderId: UUID, receiverId: UUID): List<Message> {
-        val chatPath = if (senderId.toString() < receiverId.toString()) "${senderId}_${receiverId}" else "${receiverId}_${senderId}"
+    override suspend fun getMessages(senderId: String, receiverId: String): List<Message> {
+        val chatPath = if (senderId < receiverId) "${senderId}_${receiverId}" else "${receiverId}_${senderId}"
         val snapshot = rtdb.getReference("chats").child(chatPath).get().await()
         return snapshot.children.mapNotNull { it.getValue(Message::class.java) }
     }
 
-    override suspend fun sendMessage(senderId: UUID, receiverId: UUID, content: String): Message {
+    override suspend fun sendMessage(senderId: String, receiverId: String, content: String): Message {
         val message = Message(
-            id = UUID.randomUUID(),
+            id = UUID.randomUUID().toString(),
             senderId = senderId,
             receiverId = receiverId,
             content = content,
             sentAt = Date().toString()
         )
-        
-        // Using Realtime Database for Chat Messages
-        val chatPath = if (senderId.toString() < receiverId.toString()) "${senderId}_${receiverId}" else "${receiverId}_${senderId}"
+        val chatPath = if (senderId < receiverId) "${senderId}_${receiverId}" else "${receiverId}_${senderId}"
         rtdb.getReference("chats").child(chatPath).push().setValue(message).await()
-
         return message
     }
 
-    override suspend fun getConversations(userId: UUID): List<ConversationSummary> {
-        // Complex query, simplified
+    override suspend fun getConversations(userId: String): List<ConversationSummary> {
         return emptyList()
     }
 

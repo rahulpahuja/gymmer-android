@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class ExerciseDetailViewModel(application: Application) : AndroidViewModel(application) {
     private val gymmerApp = application as GymmerApplication
@@ -21,7 +20,7 @@ class ExerciseDetailViewModel(application: Application) : AndroidViewModel(appli
     private val _uiState = MutableStateFlow(ExerciseDetailUiState())
     val uiState: StateFlow<ExerciseDetailUiState> = _uiState.asStateFlow()
 
-    fun loadExercise(exerciseId: UUID) {
+    fun loadExercise(exerciseId: String) {
         viewModelScope.launch {
             try {
                 val exercise = repository.getExercise(exerciseId)
