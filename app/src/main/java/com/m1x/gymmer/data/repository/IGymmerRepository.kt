@@ -47,6 +47,10 @@ interface IGymmerRepository {
     suspend fun getBusinessInsights(): BusinessInsights
     suspend fun getDefaulters(): List<Defaulter>
 
+    suspend fun processPayment(request: PaymentRequest): PaymentResponse
+    suspend fun updateNotificationConfig(config: NotificationConfig)
+    suspend fun getNotificationConfig(userId: String): NotificationConfig
+
     suspend fun hello(): Map<String, String>
     suspend fun greet(name: String): Map<String, String>
 }

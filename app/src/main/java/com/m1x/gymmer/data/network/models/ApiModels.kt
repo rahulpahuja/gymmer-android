@@ -216,3 +216,27 @@ data class Defaulter(
     val email: String? = null,
     val amountDue: Double? = null
 )
+
+data class PaymentRequest(
+    val userId: String,
+    val amount: Double,
+    val isPartial: Boolean = false,
+    val paymentMethod: String = "UPI",
+    val remarks: String? = null
+)
+
+data class PaymentResponse(
+    val transactionId: String,
+    val status: String,
+    val remainingAmount: Double,
+    val timestamp: String
+)
+
+data class NotificationConfig(
+    val userId: String,
+    val enableWhatsapp: Boolean = true,
+    val enableSMS: Boolean = true,
+    val enablePush: Boolean = true,
+    val trainerNotify: Boolean = true,
+    val ownerNotify: Boolean = true
+)
